@@ -79,14 +79,14 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full px-2 sm:px-4 pt-2 pb-1.5 select-none">
-      <div className="mx-auto max-w-[1520px] rounded-2xl ios-frosted-strong px-2.5 sm:px-4 py-1.5 flex items-center justify-between gap-2">
+    <header className="sticky top-0 z-40 w-full px-2 sm:px-3 xl:px-4 pt-2 pb-1.5 select-none">
+      <div className="mx-auto max-w-[1520px] rounded-2xl ios-frosted-strong px-2 sm:px-3 xl:px-4 py-1.5 flex items-center justify-between gap-1.5 lg:gap-2">
         {/* Left: STUDYHUB brand + Course Switcher */}
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-1.5 lg:gap-2 min-w-0">
           <button
             type="button"
             onClick={() => navigate('home')}
-            className="inline-flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-[var(--accent-soft)] transition-colors cursor-pointer shrink-0"
+            className="inline-flex items-center gap-2 p-1 lg:px-2 lg:py-1 rounded-xl hover:bg-[var(--accent-soft)] transition-colors cursor-pointer shrink-0"
           >
             <span
               className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
@@ -104,7 +104,7 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
           <button
             type="button"
             onClick={onOpenChangelog}
-            className="hidden md:inline-flex items-center font-mono text-[10px] font-bold px-2 py-0.5 rounded-full cursor-pointer shrink-0"
+            className="hidden xl:inline-flex items-center font-mono text-[10px] font-bold px-2 py-0.5 rounded-full cursor-pointer shrink-0"
             style={{
               backgroundColor: 'var(--accent-soft)',
               color: 'var(--accent-primary)',
@@ -116,12 +116,12 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
           </button>
 
           {/* Course Switcher Pill */}
-          <div className="relative" ref={courseMenuRef}>
+          <div className="relative shrink-0" ref={courseMenuRef}>
             <button
               type="button"
               onClick={() => setCourseMenuOpen((o) => !o)}
               aria-expanded={courseMenuOpen}
-              className="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl text-xs font-semibold border cursor-pointer max-w-[138px] sm:max-w-[220px]"
+              className="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl text-xs font-semibold border cursor-pointer max-w-[140px] sm:max-w-[200px] md:max-w-[140px] xl:max-w-[220px]"
               style={{
                 backgroundColor: 'var(--bg-surface)',
                 borderColor: 'var(--border-subtle)',
@@ -133,7 +133,7 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
                 style={{ backgroundColor: activeCourse.accentHex }}
               />
               <span className="font-mono font-bold shrink-0">{activeCourse.code}</span>
-              <span className="hidden sm:inline truncate" style={{ color: 'var(--text-secondary)' }}>
+              <span className="hidden sm:inline md:hidden xl:inline truncate" style={{ color: 'var(--text-secondary)' }}>
                 {activeCourse.shortTitle}
               </span>
               <ChevronDown className="w-3.5 h-3.5 shrink-0 opacity-65" />
@@ -201,23 +201,24 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
           </div>
         </div>
 
-        {/* Center: 5-Surface Floating iOS Segmented Dock (Desktop & Tablet) */}
+        {/* Center: 5-Surface Floating iOS Segmented Dock (Desktop & Tablet 768px+) */}
         <nav
           aria-label="Điều hướng phân khu STUDYHUB"
-          className="hidden lg:flex items-center gap-1 p-1 rounded-full border"
+          className="hidden md:flex shrink-0 items-center gap-0.5 lg:gap-1 p-1 rounded-full border"
           style={{
             backgroundColor: 'var(--bg-subtle)',
             borderColor: 'var(--border-subtle)',
           }}
         >
-          {NAV_ITEMS.map(({ id, label, Icon }) => {
+          {NAV_ITEMS.map(({ id, label, shortLabel, Icon }) => {
             const active = hubState.activeRoute === id;
             return (
               <button
                 key={id}
                 type="button"
+                aria-label={label}
                 onClick={() => navigate(id)}
-                className="relative px-3.5 py-1.5 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="relative px-1.5 lg:px-3.5 py-1.5 rounded-full text-xs font-semibold inline-flex items-center gap-1 lg:gap-1.5 cursor-pointer transition-colors whitespace-nowrap"
                 style={{
                   color: active ? 'var(--accent-primary)' : 'var(--text-secondary)',
                 }}
@@ -234,7 +235,8 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
                   />
                 )}
                 <Icon className="w-3.5 h-3.5 relative z-10 shrink-0" />
-                <span className="relative z-10">{label}</span>
+                <span className="relative z-10 lg:hidden">{shortLabel}</span>
+                <span className="relative z-10 hidden lg:inline">{label}</span>
               </button>
             );
           })}
@@ -269,7 +271,7 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
             }}
           >
             <Search className="w-3.5 h-3.5" />
-            <kbd className="hidden md:inline font-mono text-[10px] opacity-75">Ctrl K</kbd>
+            <kbd className="hidden xl:inline font-mono text-[10px] opacity-75">Ctrl K</kbd>
           </button>
 
           <div
@@ -306,10 +308,10 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
         </div>
       </div>
 
-      {/* Compact Mobile Navigation Row (< 1024px) */}
+      {/* Compact Mobile Navigation Row (< 768px) */}
       <nav
         aria-label="Điều hướng nhanh trên di động"
-        className="lg:hidden mt-1.5 mx-auto max-w-[1520px] rounded-2xl ios-frosted-panel px-1.5 py-1 grid grid-cols-5 gap-1"
+        className="md:hidden mt-1.5 mx-auto max-w-[1520px] rounded-2xl ios-frosted-panel px-1.5 py-1 grid grid-cols-5 gap-1"
       >
         {NAV_ITEMS.map(({ id, shortLabel, Icon }) => {
           const active = hubState.activeRoute === id;

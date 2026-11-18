@@ -150,12 +150,14 @@ const StudyHubShellInner: React.FC = () => {
 
   return (
     <HubKonstaShell isDark={isDark}>
-      <FloatingGlassDock
-        courses={ALL_COURSES}
-        activeCourse={activeCourse}
-        onOpenCommandPalette={() => setCommandOpen(true)}
-        onOpenChangelog={() => setChangelogOpen(true)}
-      />
+      {hubState.activeRoute !== 'home' && (
+        <FloatingGlassDock
+          courses={ALL_COURSES}
+          activeCourse={activeCourse}
+          onOpenCommandPalette={() => setCommandOpen(true)}
+          onOpenChangelog={() => setChangelogOpen(true)}
+        />
+      )}
 
       <SceneTransition sceneKey={`${hubState.activeRoute}-${activeCourse.id}`} className="flex-1 w-full">
         {hubState.activeRoute === 'home' && (

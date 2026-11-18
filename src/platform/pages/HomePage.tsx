@@ -4,21 +4,22 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
-  ClipboardCheck,
-  Code2,
   Cpu,
   Flame,
-  FlaskConical,
   GitBranch,
   History,
   Keyboard,
   Layers,
-  LayoutDashboard,
+  Monitor,
+  Moon,
   Scale,
+  Search,
   Sigma,
   Sparkles,
+  Sun,
 } from 'lucide-react';
 import { MathFormula } from '../../components/common/MathFormula';
+import { ThemeMode, useProgress } from '../../store/progressStore';
 import { useHub } from '../store/hubStore';
 import { CourseManifest } from '../types';
 import { APP_VERSION } from '../version';
@@ -68,6 +69,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onOpenCommandPalette,
 }) => {
   const { state: hubState, navigate, selectCourse } = useHub();
+  const { state: progressState, setTheme } = useProgress();
   const [showcaseMode, setShowcaseMode] =
     useState<(typeof SHOWCASE_MODES)[number]['id']>('algebra');
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
@@ -83,47 +85,109 @@ export const HomePage: React.FC<HomePageProps> = ({
     navigate(target);
   };
 
+  const themeOptions: Array<{
+    mode: ThemeMode;
+    label: string;
+    Icon: React.FC<{ className?: string }>;
+  }> = [
+    { mode: 'light', label: 'Chế độ Sáng', Icon: Sun },
+    { mode: 'dark', label: 'Chế độ Tối', Icon: Moon },
+    { mode: 'system', label: 'Theo hệ thống', Icon: Monitor },
+  ];
+
   return (
-    <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-16 space-y-16">
+    <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-16 space-y-12 sm:space-y-14">
+      {/* Minimalist Top Strip: Version Badge + Subtle Search & Theme Controls (No Heavy Dock) */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <LiquidGlassPill
+            isDark={isDark}
+            onClick={onOpenChangelog}
+            ariaLabel={`Phiên bản hiện tại ${APP_VERSION} — Xem nhật ký cập nhật`}
+          >
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: '#10B981' }}
+            />
+            <span className="font-mono font-bold tracking-wide">
+              STUDYHUB · {APP_VERSION}
+            </span>
+            <span
+              className="text-[11px] opacity-75"
+              style={{ color: isDark ? '#CBD5E1' : '#334155' }}
+            >
+              Multi-Course Glass
+            </span>
+          </LiquidGlassPill>
+
+          <span
+            className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full border"
+            style={{
+              backgroundColor: 'var(--glass-bg)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-secondary)',
+            }}
+          >
+            <Sparkles className="w-3.5 h-3.5" style={{ color: 'var(--accent-primary)' }} />
+            ĐH Công nghệ — ĐHQGHN
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+          <button
+            type="button"
+            onClick={onOpenCommandPalette}
+            aria-label="Tìm kiếm nhanh (Ctrl+K)"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium border cursor-pointer"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-secondary)',
+            }}
+          >
+            <Search className="w-3.5 h-3.5" />
+            <kbd className="hidden sm:inline font-mono text-[10px] opacity-75">Ctrl K</kbd>
+          </button>
+
+          <div
+            role="group"
+            aria-label="Chế độ giao diện Sáng Tối"
+            className="inline-flex items-center rounded-xl p-0.5 border"
+            style={{
+              backgroundColor: 'var(--bg-subtle)',
+              borderColor: 'var(--border-subtle)',
+            }}
+          >
+            {themeOptions.map(({ mode, label, Icon }) => {
+              const active = progressState.theme === mode;
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setTheme(mode)}
+                  title={label}
+                  aria-label={label}
+                  aria-pressed={active}
+                  className="p-1 rounded-lg transition-colors cursor-pointer"
+                  style={{
+                    backgroundColor: active ? 'var(--bg-surface-solid)' : 'transparent',
+                    color: active ? 'var(--accent-primary)' : 'var(--text-muted)',
+                    boxShadow: active ? 'var(--shadow-sm)' : 'none',
+                  }}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
       {/* =====================================================================
-       * 1. HERO SECTION (Version Pill + Dynamic Interactive Bento Showcase)
+       * 1. HERO SECTION (Editorial Invitation + Dynamic Interactive Bento Showcase)
        * =================================================================== */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
         <div className="lg:col-span-6 space-y-6">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <LiquidGlassPill
-              isDark={isDark}
-              onClick={onOpenChangelog}
-              ariaLabel={`Phiên bản hiện tại ${APP_VERSION} — Xem nhật ký cập nhật`}
-            >
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: '#10B981' }}
-              />
-              <span className="font-mono font-bold tracking-wide">
-                STUDYHUB · {APP_VERSION}
-              </span>
-              <span
-                className="text-[11px] opacity-75"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                Multi-Course Glass
-              </span>
-            </LiquidGlassPill>
-
-            <span
-              className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full border"
-              style={{
-                backgroundColor: 'var(--glass-bg)',
-                borderColor: 'var(--border-subtle)',
-                color: 'var(--text-secondary)',
-              }}
-            >
-              <Sparkles className="w-3.5 h-3.5" style={{ color: 'var(--accent-primary)' }} />
-              ĐH Công nghệ — ĐHQGHN
-            </span>
-          </div>
-
           <motion.h1
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -160,26 +224,19 @@ export const HomePage: React.FC<HomePageProps> = ({
               }}
             >
               <BookOpen className="w-4 h-4" />
-              <span>Vào học {activeCourse.shortTitle}</span>
+              <span>Tham gia học ngay</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
             <button
               type="button"
-              onClick={() => navigate('exams')}
+              onClick={() =>
+                document.getElementById('course-catalog')?.scrollIntoView?.({ behavior: 'smooth' })
+              }
               className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold ios-frosted-panel cursor-pointer transition-transform active:scale-95"
             >
-              <ClipboardCheck className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
-              <span>Luyện đề Cuối kỳ (Beta)</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate('dashboard')}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold ios-frosted-panel cursor-pointer transition-transform active:scale-95"
-            >
-              <LayoutDashboard className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
-              <span>Dashboard &amp; Streak</span>
+              <Layers className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
+              <span>Xem kệ môn học</span>
             </button>
           </div>
         </div>
@@ -243,11 +300,11 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </span>
                 <button
                   type="button"
-                  onClick={() => handleLaunchCourse('is2099', 'labs')}
+                  onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
                   className="font-semibold underline cursor-pointer"
                   style={{ color: 'var(--accent-primary)' }}
                 >
-                  Mở trong Phòng Lab →
+                  Tham gia học để thực hành →
                 </button>
               </div>
               <MathFormula tex={activeShowcase.tex} displayMode />
@@ -326,7 +383,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             <IosGlassSurface
               className="p-4 flex flex-col justify-between cursor-pointer"
-              onClick={() => navigate('dashboard')}
+              onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold flex items-center gap-1.5">
@@ -354,7 +411,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
 
               <div className="text-xs font-semibold flex items-center gap-1" style={{ color: 'var(--accent-primary)' }}>
-                <span>Mở Dashboard Thống kê</span>
+                <span>Tham gia học để nối dài Streak</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </IosGlassSurface>
@@ -419,7 +476,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* =====================================================================
        * 3. KỆ MÔN HỌC ĐA MÔN (MULTI-COURSE CATALOG + STARTER TEMPLATE)
        * =================================================================== */}
-      <section className="space-y-5">
+      <section id="course-catalog" className="space-y-5 scroll-mt-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="space-y-1">
             <div className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
@@ -504,42 +561,23 @@ export const HomePage: React.FC<HomePageProps> = ({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 pt-2 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
                   {course.modules.length > 0 ? (
                     <>
                       <button
                         type="button"
                         onClick={() => handleLaunchCourse(course.id, 'learn')}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-transform active:scale-95"
                         style={{ backgroundColor: 'var(--accent-primary)', color: '#FFFFFF' }}
                       >
                         <BookOpen className="w-3.5 h-3.5" />
-                        <span>Vào học ngay</span>
+                        <span>Tham gia học</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
                       </button>
 
-                      {course.labs.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => handleLaunchCourse(course.id, 'labs')}
-                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border cursor-pointer"
-                          style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}
-                        >
-                          <FlaskConical className="w-3.5 h-3.5" />
-                          <span>Phòng Lab</span>
-                        </button>
-                      )}
-
-                      {course.exams.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => handleLaunchCourse(course.id, 'exams')}
-                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border cursor-pointer"
-                          style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}
-                        >
-                          <ClipboardCheck className="w-3.5 h-3.5" />
-                          <span>Luyện đề</span>
-                        </button>
-                      )}
+                      <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+                        Mở đầy đủ Bài giảng, Phòng Lab, Dashboard &amp; Luyện đề
+                      </span>
                     </>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
@@ -573,7 +611,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </p>
           </div>
 
-          {/* Column 2: Keyboard Shortcuts + Quick Navigation */}
+          {/* Column 2: Keyboard Shortcuts */}
           <div className="space-y-2">
             <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
               <Keyboard className="w-3.5 h-3.5" />
@@ -581,9 +619,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
             <ul className="space-y-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
               <li className="flex items-center justify-between gap-2">
-                <button type="button" onClick={onOpenCommandPalette} className="underline cursor-pointer text-left">
-                  Tìm kiếm nhanh toàn Hub
-                </button>
+                <span>Tìm kiếm nhanh toàn Hub</span>
                 <kbd className="font-mono px-1.5 py-0.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
                   Ctrl + K
                 </kbd>
@@ -603,43 +639,15 @@ export const HomePage: React.FC<HomePageProps> = ({
             </ul>
           </div>
 
-          {/* Column 3: Change Logs & Quick Jump */}
-          <div className="space-y-2.5">
+          {/* Column 3: Versioning */}
+          <div className="space-y-2">
             <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
               <History className="w-3.5 h-3.5" />
               <span>Theo dõi Phiên bản</span>
             </div>
-            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-              Hiện đang chạy bản <strong>{APP_VERSION}</strong>. Xem chi tiết từng tính năng và cập nhật qua từng commit.
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              Hiện đang chạy bản <strong>{APP_VERSION}</strong>. Theo dõi lịch sử phát triển qua từng bản cập nhật và commit trên GitHub qua lối tắt bên dưới.
             </p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={onOpenChangelog}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer"
-                style={{
-                  backgroundColor: 'var(--accent-soft)',
-                  color: 'var(--accent-primary)',
-                  border: '1px solid var(--accent-border)',
-                }}
-              >
-                <History className="w-3.5 h-3.5" />
-                <span>Xem Change Logs</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigate('labs')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border cursor-pointer"
-                style={{
-                  backgroundColor: 'var(--bg-surface)',
-                  borderColor: 'var(--border-subtle)',
-                }}
-              >
-                <Code2 className="w-3.5 h-3.5" />
-                <span>Phòng Lab</span>
-              </button>
-            </div>
           </div>
 
           {/* Column 4: Credits & License */}
@@ -652,12 +660,68 @@ export const HomePage: React.FC<HomePageProps> = ({
               Nội dung học phần <code>IS2099</code> biên soạn bám sát bộ bài giảng{' '}
               <em>Nhập môn Hệ Cơ sở dữ liệu — Khoa CNTT, ĐH Công nghệ (ĐHQGHN)</em> &amp; giáo trình Elmasri–Navathe.
             </p>
-            <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono" style={{ color: 'var(--text-muted)' }}>
-              <span className="inline-flex items-center gap-1">
-                <Cpu className="w-3 h-3" /> MIT License · 2026 STUDYHUB
-              </span>
-            </div>
           </div>
+        </div>
+
+        {/* Recessed Low-Profile Footer Shortcuts Bar */}
+        <div
+          className="border-t pt-4 flex flex-wrap items-center justify-between gap-3 text-xs"
+          style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}
+        >
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="font-medium">Lối tắt nhanh:</span>
+            <button
+              type="button"
+              onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
+              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
+            >
+              Tham gia học
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => navigate('dashboard')}
+              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
+            >
+              Dashboard
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => navigate('labs')}
+              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
+            >
+              Phòng Lab
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => navigate('exams')}
+              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
+            >
+              Luyện đề (Beta)
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={onOpenChangelog}
+              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
+            >
+              Xem Change Logs
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={onOpenCommandPalette}
+              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
+            >
+              Tìm kiếm (Ctrl+K)
+            </button>
+          </div>
+
+          <span className="inline-flex items-center gap-1 font-mono text-[11px]">
+            <Cpu className="w-3 h-3" /> MIT License · 2026 STUDYHUB · {APP_VERSION}
+          </span>
         </div>
       </footer>
     </div>

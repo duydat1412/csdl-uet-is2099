@@ -1,4 +1,4 @@
-export const APP_VERSION = 'Beta v1.0';
+export const APP_VERSION = 'Beta v1.1';
 export const APP_CODENAME = 'iOS Liquid Glass · Multi-Course Hub';
 export const APP_RELEASE_DATE = '2026-11-18';
 export const APP_REPOSITORY_URL = 'https://github.com/duydat1412/csdl-uet-is2099';
@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    version: 'Beta v1.1',
+    date: '2026-11-18',
+    tag: 'beta',
+    headline: 'Tinh gọn Trang chủ Home & Mở Điều hướng Phân khu Khi Tham gia Học',
+    highlights: [
+      'Loại bỏ hoàn toàn thanh điều hướng phân khu ở đầu trang Home để giữ bố cục biên tập thoáng đãng, tập trung vào lời mời Tham gia học và Kệ môn học.',
+      'Chuyển các lối tắt đi thẳng tới Dashboard, Phòng Lab, Luyện đề (Beta) và Change Logs thành dải Shortcut chìm tinh tế ở cuối trang Home.',
+      'Thanh điều hướng Không gian Học tập (Dashboard, Học tập, Phòng Lab, Luyện đề) xuất hiện rõ ràng trên một hàng gọn gàng ngay khi người học nhấn Tham gia học.',
+    ],
+  },
   {
     version: 'Beta v1.0',
     date: '2026-11-18',
