@@ -1,4 +1,4 @@
-export const APP_VERSION = 'Beta v1.1';
+export const APP_VERSION = 'Beta v1.2';
 export const APP_CODENAME = 'iOS Liquid Glass · Multi-Course Hub';
 export const APP_RELEASE_DATE = '2026-11-18';
 export const APP_REPOSITORY_URL = 'https://github.com/duydat1412/csdl-uet-is2099';
@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    version: 'Beta v1.2',
+    date: '2026-11-18',
+    tag: 'beta',
+    headline: 'Thiết kế lại Chân trang (Footer) Tràn Viền Đa Cột Chuẩn Editorial',
+    highlights: [
+      'Loại bỏ khung thẻ bo góc ở cuối trang Home, chuyển sang chân trang tràn toàn chiều ngang (full-bleed) nối liền mạch xuống đáy trang.',
+      'Bố cục 3 tầng tinh gọn: hàng tiện ích trên cùng (Ngôn ngữ & Ký hiệu · Liên kết nhanh · Bộ chọn Giao diện dạng pill), đường kẻ mảnh phân tách và lưới 5 cột danh mục liên kết dọc.',
+      'Quy hoạch rõ các cột Không gian học tập, Kệ môn học, Phòng Lab tương tác, Phím tắt & Tra cứu và Phiên bản & Dự án (Change Logs, GitHub, MIT License).',
+    ],
+  },
   {
     version: 'Beta v1.1',
     date: '2026-11-18',

@@ -4,15 +4,15 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
-  Cpu,
+  ChevronDown,
+  Code2,
+  ExternalLink,
   Flame,
   GitBranch,
   History,
-  Keyboard,
   Layers,
   Monitor,
   Moon,
-  Scale,
   Search,
   Sigma,
   Sparkles,
@@ -22,7 +22,7 @@ import { MathFormula } from '../../components/common/MathFormula';
 import { ThemeMode, useProgress } from '../../store/progressStore';
 import { useHub } from '../store/hubStore';
 import { CourseManifest } from '../types';
-import { APP_VERSION } from '../version';
+import { APP_REPOSITORY_URL, APP_VERSION } from '../version';
 import {
   IosGlassSurface,
   LiquidGlassPill,
@@ -96,7 +96,8 @@ export const HomePage: React.FC<HomePageProps> = ({
   ];
 
   return (
-    <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-16 space-y-12 sm:space-y-14">
+    <div className="w-full min-h-screen flex flex-col justify-between">
+      <div className="w-full mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-20 space-y-12 sm:space-y-14">
       {/* Minimalist Top Strip: Version Badge + Subtle Search & Theme Controls (No Heavy Dock) */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2.5">
@@ -593,135 +594,420 @@ export const HomePage: React.FC<HomePageProps> = ({
           })}
         </div>
       </section>
+      </div>
 
       {/* =====================================================================
-       * 4. FOOTER: SHORTCUTS, CHANGE LOGS, CREDITS & LICENSE
+       * 4. FULL-BLEED EDITORIAL FOOTER (Unity-style 3-tier Sitemap & Utilities)
        * =================================================================== */}
-      <footer className="rounded-3xl ios-frosted-panel p-6 sm:p-8 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Column 1: Brand & Multi-Course SDK */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 font-bold text-sm">
-              <Layers className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
-              <span>STUDYHUB · {APP_VERSION}</span>
+      <footer
+        className="w-full border-t"
+        style={{
+          borderColor: 'var(--border-subtle)',
+          backgroundColor: isDark ? 'rgba(8, 12, 21, 0.86)' : 'rgba(241, 245, 249, 0.82)',
+        }}
+      >
+        <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8 pt-12 pb-10">
+          {/* Tier 1: Language/Standards · Quick Icons · Pill Theme Selector */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+            <div className="md:col-span-5">
+              <div
+                className="text-xs font-medium mb-3"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Ngôn ngữ &amp; Chuẩn ký hiệu
+              </div>
+              <div
+                className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  Tiếng Việt
+                </span>
+                <span>LaTeX · KaTeX</span>
+                <span>Chuẩn UET · ĐHQGHN</span>
+                <span>UTF-8 Academic</span>
+              </div>
             </div>
-            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              Nền tảng học tập đa môn kiến trúc sạch (<code className="font-mono">src/platform</code> + <code className="font-mono">src/courses</code>), hỗ trợ
-              LaTeX KaTeX, Study Streak và phòng thí nghiệm thực hành trực tiếp trên trình duyệt.
-            </p>
-          </div>
 
-          {/* Column 2: Keyboard Shortcuts */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
-              <Keyboard className="w-3.5 h-3.5" />
-              <span>Lối tắt &amp; Phím tắt (Shortcuts)</span>
+            <div className="md:col-span-4">
+              <div
+                className="text-xs font-medium mb-3"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Liên kết
+              </div>
+              <div
+                className="flex items-center gap-4"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <a
+                  href={APP_REPOSITORY_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Mã nguồn GitHub STUDYHUB"
+                  title="GitHub Repository"
+                  className="hover:text-[var(--text-primary)] transition-colors"
+                >
+                  <Code2 className="w-4 h-4" />
+                </a>
+                <button
+                  type="button"
+                  onClick={onOpenChangelog}
+                  aria-label="Nhật ký cập nhật phiên bản"
+                  title="Change Logs"
+                  className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                >
+                  <History className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={onOpenCommandPalette}
+                  aria-label="Tìm kiếm nhanh Ctrl+K"
+                  title="Tìm kiếm (Ctrl+K)"
+                  className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
+                  aria-label="Vào không gian học tập"
+                  title="Tham gia học ngay"
+                  className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                >
+                  <BookOpen className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-            <ul className="space-y-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
-              <li className="flex items-center justify-between gap-2">
-                <span>Tìm kiếm nhanh toàn Hub</span>
-                <kbd className="font-mono px-1.5 py-0.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-                  Ctrl + K
-                </kbd>
-              </li>
-              <li className="flex items-center justify-between gap-2">
-                <span>Chuyển nhanh 5 phân khu</span>
-                <kbd className="font-mono px-1.5 py-0.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-                  Alt + 1..5
-                </kbd>
-              </li>
-              <li className="flex items-center justify-between gap-2">
-                <span>Chạy Đại số QH / SQL</span>
-                <kbd className="font-mono px-1.5 py-0.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-                  Ctrl + Enter
-                </kbd>
-              </li>
-            </ul>
-          </div>
 
-          {/* Column 3: Versioning */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
-              <History className="w-3.5 h-3.5" />
-              <span>Theo dõi Phiên bản</span>
+            <div className="md:col-span-3">
+              <label
+                htmlFor="footer-theme-select"
+                className="block text-xs font-medium mb-2.5"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Giao diện
+              </label>
+              <div className="relative w-full md:max-w-[240px]">
+                <select
+                  id="footer-theme-select"
+                  aria-label="Chọn giao diện"
+                  value={progressState.theme}
+                  onChange={(e) => setTheme(e.target.value as ThemeMode)}
+                  className="w-full appearance-none rounded-full border px-4 py-2 pr-9 text-xs font-medium cursor-pointer transition-colors"
+                  style={{
+                    borderColor: 'var(--border-strong)',
+                    backgroundColor: 'transparent',
+                    color: 'var(--text-primary)',
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
+                  }}
+                >
+                  <option
+                    value="light"
+                    style={{
+                      backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+                      color: isDark ? '#F8FAFC' : '#0F172A',
+                    }}
+                  >
+                    Sáng (Pearl Glass)
+                  </option>
+                  <option
+                    value="dark"
+                    style={{
+                      backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+                      color: isDark ? '#F8FAFC' : '#0F172A',
+                    }}
+                  >
+                    Tối (Midnight Obsidian)
+                  </option>
+                  <option
+                    value="system"
+                    style={{
+                      backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+                      color: isDark ? '#F8FAFC' : '#0F172A',
+                    }}
+                  >
+                    Theo hệ thống
+                  </option>
+                </select>
+                <ChevronDown
+                  className="w-3.5 h-3.5 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2"
+                  style={{ color: 'var(--text-muted)' }}
+                />
+              </div>
             </div>
-            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              Hiện đang chạy bản <strong>{APP_VERSION}</strong>. Theo dõi lịch sử phát triển qua từng bản cập nhật và commit trên GitHub qua lối tắt bên dưới.
-            </p>
           </div>
 
-          {/* Column 4: Credits & License */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
-              <Scale className="w-3.5 h-3.5" />
-              <span>Credits &amp; License</span>
+          {/* Hairline Separator */}
+          <div className="my-9 border-t" style={{ borderColor: 'var(--border-subtle)' }} />
+
+          {/* Tier 2: 5-Column Vertical Editorial Sitemap */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-8">
+            {/* Column 1 */}
+            <div>
+              <div
+                className="text-xs font-medium mb-3.5"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Không gian học tập
+              </div>
+              <ul className="space-y-2.5 text-[13px]" style={{ color: 'var(--text-primary)' }}>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Tham gia học
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('dashboard')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Dashboard &amp; Streak
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('labs')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Phòng thí nghiệm (Labs)
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('exams')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Luyện đề Cuối kỳ (Beta)
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={onOpenCommandPalette}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Tìm kiếm toàn Hub
+                  </button>
+                </li>
+              </ul>
             </div>
-            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              Nội dung học phần <code>IS2099</code> biên soạn bám sát bộ bài giảng{' '}
-              <em>Nhập môn Hệ Cơ sở dữ liệu — Khoa CNTT, ĐH Công nghệ (ĐHQGHN)</em> &amp; giáo trình Elmasri–Navathe.
-            </p>
-          </div>
-        </div>
 
-        {/* Recessed Low-Profile Footer Shortcuts Bar */}
-        <div
-          className="border-t pt-4 flex flex-wrap items-center justify-between gap-3 text-xs"
-          style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}
-        >
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="font-medium">Lối tắt nhanh:</span>
-            <button
-              type="button"
-              onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
-              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
-            >
-              Tham gia học
-            </button>
-            <span aria-hidden="true">·</span>
-            <button
-              type="button"
-              onClick={() => navigate('dashboard')}
-              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
-            >
-              Dashboard
-            </button>
-            <span aria-hidden="true">·</span>
-            <button
-              type="button"
-              onClick={() => navigate('labs')}
-              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
-            >
-              Phòng Lab
-            </button>
-            <span aria-hidden="true">·</span>
-            <button
-              type="button"
-              onClick={() => navigate('exams')}
-              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
-            >
-              Luyện đề (Beta)
-            </button>
-            <span aria-hidden="true">·</span>
-            <button
-              type="button"
-              onClick={onOpenChangelog}
-              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
-            >
-              Xem Change Logs
-            </button>
-            <span aria-hidden="true">·</span>
-            <button
-              type="button"
-              onClick={onOpenCommandPalette}
-              className="hover:text-[var(--text-primary)] hover:underline transition-colors cursor-pointer"
-            >
-              Tìm kiếm (Ctrl+K)
-            </button>
+            {/* Column 2 */}
+            <div>
+              <div
+                className="text-xs font-medium mb-3.5"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Kệ môn học
+              </div>
+              <ul className="space-y-2.5 text-[13px]" style={{ color: 'var(--text-primary)' }}>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => handleLaunchCourse('is2099', 'learn')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    IS2099 · Cơ sở dữ liệu
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      document.getElementById('course-catalog')?.scrollIntoView?.({ behavior: 'smooth' })
+                    }
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    MAT1052 · Xác suất Thống kê
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      document.getElementById('course-catalog')?.scrollIntoView?.({ behavior: 'smooth' })
+                    }
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    INT2210 · CTDL &amp; Giải thuật
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => handleLaunchCourse('course-template', 'learn')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    TEMPLATE-101 · Khung mẫu
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3 */}
+            <div>
+              <div
+                className="text-xs font-medium mb-3.5"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Phòng Lab Tương tác
+              </div>
+              <ul className="space-y-2.5 text-[13px]" style={{ color: 'var(--text-primary)' }}>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('labs')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Đại số Quan hệ
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('labs')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Phụ thuộc hàm &amp; BCNF
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('labs')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    SQL Thực chiến Cuối kỳ
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('labs')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Sơ đồ ER / EER &amp; Ánh xạ
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('labs')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Mô phỏng Dị thường Bảng
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4 */}
+            <div>
+              <div
+                className="text-xs font-medium mb-3.5"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Phím tắt &amp; Tra cứu
+              </div>
+              <ul className="space-y-2.5 text-[13px]" style={{ color: 'var(--text-primary)' }}>
+                <li>
+                  <button
+                    type="button"
+                    onClick={onOpenCommandPalette}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Bảng lệnh nhanh (Ctrl + K)
+                  </button>
+                </li>
+                <li className="opacity-85">Chuyển phân khu (Alt + 1..5)</li>
+                <li className="opacity-85">Thực thi truy vấn (Ctrl + Enter)</li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('exams')}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Đề thi mẫu UET 90 phút
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 5 */}
+            <div>
+              <div
+                className="text-xs font-medium mb-3.5"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Phiên bản &amp; Dự án
+              </div>
+              <ul className="space-y-2.5 text-[13px]" style={{ color: 'var(--text-primary)' }}>
+                <li>
+                  <button
+                    type="button"
+                    onClick={onOpenChangelog}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Xem Change Logs
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={onOpenChangelog}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Phiên bản {APP_VERSION}
+                  </button>
+                </li>
+                <li>
+                  <a
+                    href={APP_REPOSITORY_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 opacity-85 hover:opacity-100 hover:underline transition-opacity"
+                  >
+                    <span>Mã nguồn GitHub</span>
+                    <ExternalLink className="w-3 h-3 opacity-70" />
+                  </a>
+                </li>
+                <li className="opacity-85">Khoa CNTT — ĐHQGHN</li>
+                <li className="opacity-85">Giáo trình Elmasri &amp; Navathe</li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={onOpenChangelog}
+                    className="opacity-85 hover:opacity-100 hover:underline transition-opacity cursor-pointer text-left"
+                  >
+                    Giấy phép MIT License
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          <span className="inline-flex items-center gap-1 font-mono text-[11px]">
-            <Cpu className="w-3 h-3" /> MIT License · 2026 STUDYHUB · {APP_VERSION}
-          </span>
+          {/* Tier 3: Bottom Legal / Copyright Bar */}
+          <div
+            className="mt-12 pt-2 flex flex-wrap items-center justify-between gap-4 text-xs"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            <span>
+              Copyright © 2026 STUDYHUB · {APP_VERSION} · Phát hành theo giấy phép MIT License.
+            </span>
+            <span>
+              Biên soạn phục vụ học tập &amp; ôn thi học kỳ — ĐH Công nghệ, ĐHQGHN.
+            </span>
+          </div>
         </div>
       </footer>
     </div>
