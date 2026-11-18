@@ -2,32 +2,23 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import {
   ArrowRight,
+  ArrowUpRight,
   BookOpen,
-  CheckCircle2,
   ChevronDown,
   Code2,
   ExternalLink,
-  Flame,
-  GitBranch,
+  GraduationCap,
   History,
-  Layers,
-  Monitor,
   Moon,
   Search,
-  Sigma,
-  Sparkles,
   Sun,
 } from 'lucide-react';
 import { MathFormula } from '../../components/common/MathFormula';
-import { ThemeMode, useProgress } from '../../store/progressStore';
+import { useProgress } from '../../store/progressStore';
 import { useHub } from '../store/hubStore';
 import { CourseManifest } from '../types';
 import { APP_REPOSITORY_URL, APP_VERSION } from '../version';
-import {
-  IosGlassSurface,
-  LiquidGlassPill,
-  ReadingGlassPanel,
-} from '../ui/GlassPrimitives';
+import { ReadingGlassPanel } from '../ui/GlassPrimitives';
 
 export interface HomePageProps {
   courses: CourseManifest[];
@@ -41,21 +32,18 @@ const SHOWCASE_MODES = [
   {
     id: 'algebra',
     label: 'Đại số Quan hệ',
-    badge: 'C3_2 · Set Semantics',
     tex: '\\pi_{\\text{MANV},\\text{TENNV}}\\Big((\\pi_{\\text{MANV},\\text{MADA}}(\\text{NV\\_DEAN}) \\div \\text{DA\\_NC}) * \\text{NHANVIEN}\\Big)',
     note: 'Tự động khử trùng lặp tập hợp và giải phẫu Phép chia 4 bước T1, S × T1, T2, T1 − T2.',
   },
   {
     id: 'fd',
     label: 'Chuẩn hóa BCNF',
-    badge: 'C4_1 · Armstrong X+',
     tex: '\\{\\text{GiaoVien}\\}^+ = \\{\\text{GiaoVien},\\; \\text{MonHoc}\\} \\implies R_1(\\underline{\\text{GV}}, \\text{MH}),\\; R_2(\\underline{\\text{MaSV}}, \\underline{\\text{GV}})',
     note: 'Tách lược đồ bảo toàn thông tin (R1 ∩ R2 → R1) từ tập phụ thuộc hàm F.',
   },
   {
     id: 'sql',
     label: 'SQL Cuối kỳ',
-    badge: 'Correlated NOT EXISTS',
     tex: '\\text{WHERE NOT EXISTS }(\\sigma_{\\text{MADV}=5}(\\text{DEAN}) \\;\\land\\; \\neg\\exists\\,\\text{NV\\_DEAN})',
     note: 'Biểu diễn lượng từ phổ dụng ∀ ("tất cả đề án") bằng truy vấn lồng tương quan 2 tầng.',
   },
@@ -68,11 +56,10 @@ export const HomePage: React.FC<HomePageProps> = ({
   onOpenChangelog,
   onOpenCommandPalette,
 }) => {
-  const { state: hubState, navigate, selectCourse } = useHub();
+  const { navigate, selectCourse } = useHub();
   const { state: progressState, setTheme } = useProgress();
   const [showcaseMode, setShowcaseMode] =
     useState<(typeof SHOWCASE_MODES)[number]['id']>('algebra');
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const themeMenuRef = useRef<HTMLDivElement>(null);
 
@@ -105,181 +92,200 @@ export const HomePage: React.FC<HomePageProps> = ({
     navigate(target);
   };
 
-  const themeOptions: Array<{
-    mode: ThemeMode;
-    label: string;
-    Icon: React.FC<{ className?: string }>;
-  }> = [
-    { mode: 'light', label: 'Chế độ Sáng', Icon: Sun },
-    { mode: 'dark', label: 'Chế độ Tối', Icon: Moon },
-    { mode: 'system', label: 'Theo hệ thống', Icon: Monitor },
-  ];
-
   return (
     <div className="w-full min-h-screen flex flex-col justify-between">
-      <div className="w-full mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-20 space-y-12 sm:space-y-14">
-      {/* Minimalist Top Strip: Version Badge + Subtle Search & Theme Controls (No Heavy Dock) */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <LiquidGlassPill
-            isDark={isDark}
-            onClick={onOpenChangelog}
-            ariaLabel={`Phiên bản hiện tại ${APP_VERSION} — Xem nhật ký cập nhật`}
-          >
-            <span
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: '#10B981' }}
-            />
-            <span className="font-mono font-bold tracking-wide">
-              STUDYHUB · {APP_VERSION}
-            </span>
-            <span
-              className="text-[11px] opacity-75"
-              style={{ color: isDark ? '#CBD5E1' : '#334155' }}
+      <div className="w-full mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8 pt-4 pb-24 space-y-16 sm:space-y-20">
+        {/* Flat Background-Blended Navigation Row (Unity-inspired editorial header) */}
+        <header className="flex items-center justify-between gap-4 py-2">
+          <div className="flex items-center gap-7 min-w-0">
+            <div className="inline-flex items-center gap-2 shrink-0 select-none">
+              <GraduationCap className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
+              <span className="font-bold text-sm tracking-tight">STUDYHUB</span>
+            </div>
+
+            <nav
+              aria-label="Giới thiệu và danh mục trang chủ"
+              className="hidden lg:flex items-center gap-5 xl:gap-6 whitespace-nowrap text-[13px] font-medium"
             >
-              Multi-Course Glass
-            </span>
-          </LiquidGlassPill>
-
-          <span
-            className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full border"
-            style={{
-              backgroundColor: 'var(--glass-bg)',
-              borderColor: 'var(--border-subtle)',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <Sparkles className="w-3.5 h-3.5" style={{ color: 'var(--accent-primary)' }} />
-            ĐH Công nghệ — ĐHQGHN
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
-          <button
-            type="button"
-            onClick={onOpenCommandPalette}
-            aria-label="Tìm kiếm nhanh (Ctrl+K)"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium border cursor-pointer"
-            style={{
-              backgroundColor: 'var(--bg-surface)',
-              borderColor: 'var(--border-subtle)',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <Search className="w-3.5 h-3.5" />
-            <kbd className="hidden sm:inline font-mono text-[10px] opacity-75">Ctrl K</kbd>
-          </button>
-
-          <div
-            role="group"
-            aria-label="Chế độ giao diện Sáng Tối"
-            className="inline-flex items-center rounded-xl p-0.5 border"
-            style={{
-              backgroundColor: 'var(--bg-subtle)',
-              borderColor: 'var(--border-subtle)',
-            }}
-          >
-            {themeOptions.map(({ mode, label, Icon }) => {
-              const active = progressState.theme === mode;
-              return (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setTheme(mode)}
-                  title={label}
-                  aria-label={label}
-                  aria-pressed={active}
-                  className="p-1 rounded-lg transition-colors cursor-pointer"
-                  style={{
-                    backgroundColor: active ? 'var(--bg-surface-solid)' : 'transparent',
-                    color: active ? 'var(--accent-primary)' : 'var(--text-muted)',
-                    boxShadow: active ? 'var(--shadow-sm)' : 'none',
-                  }}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                </button>
-              );
-            })}
+              <button
+                type="button"
+                onClick={() =>
+                  document.getElementById('methodology')?.scrollIntoView?.({ behavior: 'smooth' })
+                }
+                className="bg-transparent border-0 p-0 cursor-pointer transition-colors hover:text-[var(--text-primary)]"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Phương pháp
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  document.getElementById('course-catalog')?.scrollIntoView?.({ behavior: 'smooth' })
+                }
+                className="bg-transparent border-0 p-0 cursor-pointer transition-colors hover:text-[var(--text-primary)]"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Học phần
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('labs')}
+                className="bg-transparent border-0 p-0 cursor-pointer transition-colors hover:text-[var(--text-primary)]"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Phòng Lab
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('exams')}
+                className="bg-transparent border-0 p-0 cursor-pointer transition-colors hover:text-[var(--text-primary)]"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Luyện đề
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('dashboard')}
+                className="bg-transparent border-0 p-0 cursor-pointer transition-colors hover:text-[var(--text-primary)]"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Dashboard
+              </button>
+            </nav>
           </div>
-        </div>
-      </div>
 
-      {/* =====================================================================
-       * 1. HERO SECTION (Editorial Invitation + Dynamic Interactive Bento Showcase)
-       * =================================================================== */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-        <div className="lg:col-span-6 space-y-6">
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="text-3xl sm:text-4xl lg:text-[42px] font-bold tracking-tight leading-[1.18]"
-          >
-            Không gian Học &amp; Ôn thi{' '}
-            <span style={{ color: 'var(--accent-primary)' }}>
-              Đa môn Tương tác
-            </span>{' '}
-            chuẩn Toán học LaTeX
-          </motion.h1>
-
-          <p
-            className="text-sm sm:text-base leading-relaxed max-w-2xl"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Thay vì đọc slide tĩnh rời rạc, <strong>STUDYHUB</strong> kết hợp
-            giáo trình giảng giải bản chất từng dòng,{' '}
-            <strong>Bài giải mẫu tự luận</strong>, phòng thí nghiệm mô phỏng
-            thời gian thực và <strong>Phòng Luyện đề Cuối kỳ</strong> tách biệt
-            cho từng học phần.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-3 pt-1">
-            <button
-              type="button"
-              onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold cursor-pointer transition-transform active:scale-95"
-              style={{
-                backgroundColor: 'var(--accent-primary)',
-                color: '#FFFFFF',
-                boxShadow: 'var(--shadow-md)',
-              }}
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>Tham gia học ngay</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
               type="button"
               onClick={() =>
                 document.getElementById('course-catalog')?.scrollIntoView?.({ behavior: 'smooth' })
               }
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold ios-frosted-panel cursor-pointer transition-transform active:scale-95"
+              className="hidden xl:inline-flex items-center whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium cursor-pointer transition-opacity hover:opacity-90"
+              style={{
+                backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)',
+                color: 'var(--text-primary)',
+              }}
             >
-              <Layers className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
-              <span>Xem kệ môn học</span>
+              Xem học phần
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
+              className="inline-flex items-center whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold cursor-pointer transition-transform active:scale-95"
+              style={{
+                backgroundColor: 'var(--accent-primary)',
+                color: '#FFFFFF',
+              }}
+            >
+              Bắt đầu học
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenCommandPalette}
+              aria-label="Tìm kiếm nhanh (Ctrl+K)"
+              className="p-2 rounded-full bg-transparent border-0 opacity-75 hover:opacity-100 transition-opacity cursor-pointer"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              <Search className="w-4 h-4" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTheme(isDark ? 'light' : 'dark')}
+              aria-label={isDark ? 'Chuyển sang chế độ Sáng' : 'Chuyển sang chế độ Tối'}
+              className="p-2 rounded-full bg-transparent border-0 opacity-75 hover:opacity-100 transition-opacity cursor-pointer"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
           </div>
+        </header>
+
+        {/* Quiet Announcement Banner Strip (Release Version & Change Logs) */}
+        <div
+          className="!mt-4 w-full rounded-2xl px-5 py-3.5 flex items-center justify-between sm:justify-start gap-3.5"
+          style={{
+            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.045)' : 'rgba(15, 23, 42, 0.04)',
+          }}
+        >
+          <span className="text-xs sm:text-[13px] font-medium" style={{ color: 'var(--text-secondary)' }}>
+            Phiên bản hiện tại: <strong style={{ color: 'var(--text-primary)' }}>STUDYHUB · {APP_VERSION}</strong> — Không gian tự học &amp; ôn thi đại học chuẩn Toán học LaTeX đã sẵn sàng.
+          </span>
+          <button
+            type="button"
+            onClick={onOpenChangelog}
+            aria-label="Mở nhật ký phiên bản"
+            title="Xem nhật ký cập nhật"
+            className="w-7 h-7 rounded-full inline-flex items-center justify-center shrink-0 cursor-pointer transition-transform hover:scale-105"
+            style={{ backgroundColor: 'var(--accent-primary)', color: '#FFFFFF' }}
+          >
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </button>
         </div>
 
-        {/* Right Kinetic Showcase Bento (antigravity.google-inspired live widgets) */}
-        <div className="lg:col-span-6 space-y-3.5">
-          {/* Interactive Live Schema-to-Math Translator Card */}
-          <IosGlassSurface className="p-4 sm:p-5 space-y-3.5">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <Sigma className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
-                <span className="text-xs font-bold uppercase tracking-wider">
-                  Biến đổi Công thức Trực tiếp
-                </span>
-              </div>
+        {/* =====================================================================
+         * 1. SERENE EDITORIAL HERO SECTION
+         * =================================================================== */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center pt-2 sm:pt-6">
+          <div className="lg:col-span-6 space-y-5">
+            <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+              Nền tảng Học thuật Mở · ĐH Công nghệ, ĐHQGHN
+            </div>
 
-              <div
-                className="inline-flex rounded-full p-0.5 border"
+            <motion.h1
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              className="text-3xl sm:text-4xl lg:text-[44px] font-bold tracking-tight leading-[1.16]"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              Hiểu sâu bản chất từng công thức, thực hành trực tiếp trên trình duyệt.
+            </motion.h1>
+
+            <p
+              className="text-sm sm:text-base leading-relaxed max-w-xl"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              STUDYHUB biên soạn kiến thức đại học theo mạch tư duy từ trực giác
+              đến định nghĩa hình thức, kết hợp bài giải mẫu tự luận LaTeX,
+              phòng thí nghiệm mô phỏng dữ liệu và bộ đề ôn tập cuối kỳ cho từng môn học.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-5 pt-2">
+              <button
+                type="button"
+                onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold cursor-pointer transition-transform active:scale-95"
                 style={{
-                  backgroundColor: 'var(--bg-subtle)',
-                  borderColor: 'var(--border-subtle)',
+                  backgroundColor: 'var(--accent-primary)',
+                  color: '#FFFFFF',
                 }}
+              >
+                <span>Tham gia học ngay</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  document.getElementById('methodology')?.scrollIntoView?.({ behavior: 'smooth' })
+                }
+                className="bg-transparent border-0 p-0 text-sm font-medium cursor-pointer hover:underline"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Tìm hiểu cấu trúc nền tảng ↓
+              </button>
+            </div>
+          </div>
+
+          {/* Single Calm Mathematical Preview Panel */}
+          <div className="lg:col-span-6">
+            <ReadingGlassPanel className="p-6 sm:p-8 space-y-5">
+              <div
+                className="flex flex-wrap items-center gap-6 border-b pb-3 text-xs font-medium"
+                style={{ borderColor: 'var(--border-subtle)' }}
               >
                 {SHOWCASE_MODES.map((m) => {
                   const active = showcaseMode === m.id;
@@ -288,11 +294,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                       key={m.id}
                       type="button"
                       onClick={() => setShowcaseMode(m.id)}
-                      className="px-2.5 py-1 rounded-full text-[11px] font-semibold cursor-pointer transition-colors"
+                      className="bg-transparent border-0 pb-3 -mb-[13px] cursor-pointer transition-colors"
                       style={{
-                        backgroundColor: active ? 'var(--bg-surface-solid)' : 'transparent',
-                        color: active ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                        boxShadow: active ? 'var(--shadow-sm)' : 'none',
+                        color: active ? 'var(--text-primary)' : 'var(--text-muted)',
+                        borderBottom: active
+                          ? '2px solid var(--accent-primary)'
+                          : '2px solid transparent',
                       }}
                     >
                       {m.label}
@@ -300,320 +307,153 @@ export const HomePage: React.FC<HomePageProps> = ({
                   );
                 })}
               </div>
-            </div>
 
-            <motion.div
-              key={activeShowcase.id}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-              className="space-y-2"
-            >
-              <div className="flex items-center justify-between text-[11px]">
-                <span
-                  className="font-mono font-bold px-2 py-0.5 rounded-full"
-                  style={{
-                    backgroundColor: 'var(--accent-soft)',
-                    color: 'var(--accent-primary)',
-                  }}
-                >
-                  {activeShowcase.badge}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
-                  className="font-semibold underline cursor-pointer"
-                  style={{ color: 'var(--accent-primary)' }}
-                >
-                  Tham gia học để thực hành →
-                </button>
-              </div>
-              <MathFormula tex={activeShowcase.tex} displayMode />
-              <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                {activeShowcase.note}
-              </p>
-            </motion.div>
-          </IosGlassSurface>
-
-          {/* Bottom 2 Kinetic Mini-Cards: Orbital Relational Graph + Live Streak Preview */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <IosGlassSurface className="p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold flex items-center gap-1.5">
-                  <GitBranch className="w-3.5 h-3.5" style={{ color: 'var(--accent-primary)' }} />
-                  Đồ thị Thực thể Tương tác
-                </span>
-                <span className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
-                  Chạm nút để xem
-                </span>
-              </div>
-
-              <svg viewBox="0 0 260 110" className="w-full h-24 overflow-visible" role="img" aria-label="Minh họa đồ thị liên kết động">
-                <line x1="54" y1="55" x2="130" y2="30" stroke="var(--border-strong)" strokeWidth="1.5" />
-                <line x1="130" y1="30" x2="206" y2="55" stroke="var(--border-strong)" strokeWidth="1.5" />
-                <line x1="54" y1="55" x2="130" y2="85" stroke="var(--accent-border)" strokeWidth="1.5" strokeDasharray="4 3" />
-                {[
-                  { id: 'nv', label: 'NHANVIEN', x: 54, y: 55 },
-                  { id: 'pb', label: 'PHONGBAN', x: 130, y: 30 },
-                  { id: 'da', label: 'DEAN', x: 206, y: 55 },
-                  { id: 'bcnf', label: 'BCNF', x: 130, y: 85 },
-                ].map((node, i) => {
-                  const isHov = hoveredNode === node.id;
-                  return (
-                    <motion.g
-                      key={node.id}
-                      animate={{
-                        y: isHov ? -4 : [0, i % 2 === 0 ? -3 : 3, 0],
-                        scale: isHov ? 1.07 : 1,
-                      }}
-                      transition={
-                        isHov
-                          ? { type: 'spring', stiffness: 380, damping: 20 }
-                          : { repeat: Infinity, duration: 3.4 + i * 0.5, ease: 'easeInOut' }
-                      }
-                      onMouseEnter={() => setHoveredNode(node.id)}
-                      onMouseLeave={() => setHoveredNode(null)}
-                      style={{ cursor: 'pointer', transformOrigin: `${node.x}px ${node.y}px` }}
-                    >
-                      <rect
-                        x={node.x - 36}
-                        y={node.y - 13}
-                        width={72}
-                        height={26}
-                        rx={13}
-                        fill={isHov ? 'var(--accent-primary)' : 'var(--bg-surface-solid)'}
-                        stroke="var(--accent-border)"
-                        strokeWidth={1.5}
-                      />
-                      <text
-                        x={node.x}
-                        y={node.y + 4}
-                        textAnchor="middle"
-                        fontSize={10}
-                        fontWeight={700}
-                        fontFamily="var(--font-mono)"
-                        fill={isHov ? '#FFFFFF' : 'var(--text-primary)'}
-                      >
-                        {node.label}
-                      </text>
-                    </motion.g>
-                  );
-                })}
-              </svg>
-            </IosGlassSurface>
-
-            <IosGlassSurface
-              className="p-4 flex flex-col justify-between cursor-pointer"
-              onClick={() => handleLaunchCourse(activeCourse.id, 'learn')}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold flex items-center gap-1.5">
-                  <Flame className="w-4 h-4" style={{ color: 'var(--warning-text)' }} />
-                  Study Streak Đa môn
-                </span>
-                <span
-                  className="font-mono text-xs font-bold px-2 py-0.5 rounded-full"
-                  style={{
-                    backgroundColor: 'var(--warning-bg)',
-                    color: 'var(--warning-text)',
-                  }}
-                >
-                  {hubState.streak.currentStreak} ngày
-                </span>
-              </div>
-
-              <div className="py-2">
-                <div className="text-2xl font-bold font-mono">
-                  Kỷ lục: {hubState.streak.longestStreak} ngày
-                </div>
-                <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
-                  Học bất kỳ môn nào hoặc làm xong 1 đề trong Exam Arena đều tự động nối dài chuỗi Streak và tô sáng lịch nhiệt 56 ngày.
-                </p>
-              </div>
-
-              <div className="text-xs font-semibold flex items-center gap-1" style={{ color: 'var(--accent-primary)' }}>
-                <span>Tham gia học để nối dài Streak</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </div>
-            </IosGlassSurface>
-          </div>
-        </div>
-      </section>
-
-      {/* =====================================================================
-       * 2. PHƯƠNG PHÁP BIÊN SOẠN & GIẢNG DẠY CHUYÊN SÂU
-       * =================================================================== */}
-      <section className="space-y-5">
-        <div className="max-w-2xl space-y-1.5">
-          <div className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
-            Phương pháp Biên soạn Chuyên sâu Ôn thi Cuối kỳ
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            Mỗi bài giảng đi qua 5 tầng tư duy — Học hiểu tận gốc, Làm bài không sót bẫy
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
-          {[
-            {
-              step: '01',
-              title: 'Trực giác & Vấn đề',
-              desc: 'Đặt bài toán thực tế khiến cách làm ngây thơ thất bại trước khi đưa khái niệm mới.',
-            },
-            {
-              step: '02',
-              title: 'Lý thuyết Chuẩn UET',
-              desc: 'Giải nghĩa từng ký hiệu toán học LaTeX khớp slide bài giảng Khoa CNTT — ĐHQGHN.',
-            },
-            {
-              step: '03',
-              title: 'Bài giải Mẫu Tự luận',
-              desc: 'Khung lời giải viết tay từng bước chuẩn thang điểm đề thi cuối kỳ (Worked Examples).',
-            },
-            {
-              step: '04',
-              title: 'Gỡ bẫy Mất điểm',
-              desc: 'Bóc tách các lỗi kinh điển: ngược chiều (min, max), quên chiếu trước phép chia, SQL NULL.',
-            },
-            {
-              step: '05',
-              title: 'Lab & Exam Arena',
-              desc: 'Chấm điểm tức thì qua 5 engine client-side và bộ đề thi thử 90 phút riêng biệt.',
-            },
-          ].map((item) => (
-            <ReadingGlassPanel key={item.step} className="p-4 space-y-2">
-              <div className="font-mono text-xs font-bold" style={{ color: 'var(--accent-primary)' }}>
-                TẦNG {item.step}
-              </div>
-              <div className="text-sm font-bold">{item.title}</div>
-              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                {item.desc}
-              </p>
-            </ReadingGlassPanel>
-          ))}
-        </div>
-      </section>
-
-      {/* =====================================================================
-       * 3. KỆ MÔN HỌC ĐA MÔN (MULTI-COURSE CATALOG + STARTER TEMPLATE)
-       * =================================================================== */}
-      <section id="course-catalog" className="space-y-5 scroll-mt-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div className="space-y-1">
-            <div className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
-              Kho Học phần Đa Môn · Plug-and-Play Architecture
-            </div>
-            <h2 className="text-2xl font-bold tracking-tight">
-              Chọn Môn học để Khám phá — Hoặc Dùng Mẫu{' '}
-              <code className="font-mono text-[0.88em] px-1.5 py-0.5 rounded-lg bg-[var(--accent-soft)] text-[var(--accent-primary)]">
-                _course-template
-              </code>{' '}
-              Mở rộng Nhanh
-            </h2>
-          </div>
-          <span className="font-mono text-xs px-3 py-1 rounded-full ios-frosted-panel" style={{ color: 'var(--text-muted)' }}>
-            src/courses/registry.ts
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {courses.map((course) => {
-            const totalLessons = course.modules.reduce((a, m) => a + m.lessons.length, 0);
-            const isSelected = course.id === activeCourse.id;
-            return (
-              <IosGlassSurface
-                key={course.id}
-                className="p-5 flex flex-col justify-between gap-4"
-                style={{
-                  borderColor: isSelected ? 'var(--accent-border)' : 'var(--glass-border)',
-                }}
+              <motion.div
+                key={activeShowcase.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-3"
               >
-                <div className="space-y-2.5">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: course.accentHex }}
-                      />
-                      <span className="font-mono text-xs font-bold">{course.code}</span>
-                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                        · {course.faculty}
+                <MathFormula tex={activeShowcase.tex} displayMode />
+                <p className="text-xs leading-relaxed pt-2" style={{ color: 'var(--text-secondary)' }}>
+                  {activeShowcase.note}
+                </p>
+              </motion.div>
+            </ReadingGlassPanel>
+          </div>
+        </section>
+
+        {/* =====================================================================
+         * 2. ARCHITECTURAL 3-COLUMN OVERVIEW (Borderless Canvas Typography)
+         * =================================================================== */}
+        <section
+          id="methodology"
+          className="pt-12 border-t space-y-8 scroll-mt-8"
+          style={{ borderColor: 'var(--border-subtle)' }}
+        >
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
+            Thiết kế tối ưu cho việc tự học và ôn thi học kỳ
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                Giáo trình &amp; Bài giải mẫu LaTeX
+              </h3>
+              <p className="text-xs sm:text-[13px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                Trình bày từng bước biến đổi công thức, chỉ rõ các bẫy mất điểm
+                thường gặp trong đề thi tự luận và trắc nghiệm cuối kỳ.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                Phòng thí nghiệm chạy trực tiếp
+              </h3>
+              <p className="text-xs sm:text-[13px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                Thực thi tức thì biểu thức Đại số quan hệ, tìm bao đóng phụ thuộc hàm,
+                kiểm tra dạng chuẩn <code>BCNF</code> và truy vấn <code>SQL</code> mà không cần cài máy chủ.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                Cấu trúc Đa môn đồng nhất
+              </h3>
+              <p className="text-xs sm:text-[13px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                Tách biệt tầng hiển thị dùng chung và nội dung từng môn học qua khuôn mẫu{' '}
+                <code className="font-mono">TEMPLATE-101</code>, giúp mở rộng sang các học phần tiếp theo gọn nhẹ.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* =====================================================================
+         * 3. QUIET, RESTRAINED MULTI-COURSE DIRECTORY
+         * =================================================================== */}
+        <section
+          id="course-catalog"
+          className="pt-12 border-t space-y-6 scroll-mt-8"
+          style={{ borderColor: 'var(--border-subtle)' }}
+        >
+          <div className="space-y-1.5">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
+              Danh mục Học phần
+            </h2>
+            <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>
+              Chọn học phần để mở không gian bài giảng, phòng lab và đề ôn tập tương ứng.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {courses.map((course) => {
+              const totalLessons = course.modules.reduce((a, m) => a + m.lessons.length, 0);
+              const statusLabel =
+                course.status === 'active'
+                  ? 'Đang mở'
+                  : course.status === 'template-sample'
+                    ? 'Khung mẫu'
+                    : 'Sắp ra mắt';
+              return (
+                <div
+                  key={course.id}
+                  className="rounded-2xl border p-6 flex flex-col justify-between gap-5 transition-colors"
+                  style={{
+                    borderColor: 'var(--border-subtle)',
+                    backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.55)',
+                  }}
+                >
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between gap-2 text-xs">
+                      <span className="font-mono" style={{ color: 'var(--text-muted)' }}>
+                        {course.code} · {course.faculty}
                       </span>
+                      <span style={{ color: 'var(--text-muted)' }}>{statusLabel}</span>
                     </div>
 
-                    <span
-                      className="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
-                      style={{
-                        backgroundColor:
-                          course.status === 'active'
-                            ? 'var(--success-bg)'
-                            : course.status === 'template-sample'
-                              ? 'var(--accent-soft)'
-                              : 'var(--bg-subtle)',
-                        color:
-                          course.status === 'active'
-                            ? 'var(--success-text)'
-                            : course.status === 'template-sample'
-                              ? 'var(--accent-primary)'
-                              : 'var(--text-muted)',
-                      }}
-                    >
-                      {course.status === 'active'
-                        ? 'Sẵn sàng Ôn thi Cuối kỳ'
-                        : course.status === 'template-sample'
-                          ? 'Mẫu mở rộng SDK'
-                          : 'Dự kiến tiếp theo'}
-                    </span>
+                    <h3 className="text-base sm:text-lg font-bold leading-snug">
+                      {course.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                      {course.summary}
+                    </p>
+
+                    {course.modules.length > 0 && (
+                      <div className="flex flex-wrap gap-2 pt-1 text-[11px] font-mono" style={{ color: 'var(--text-muted)' }}>
+                        <span>{course.modules.length} Chặng</span>
+                        <span>·</span>
+                        <span>{totalLessons} Bài học</span>
+                        <span>·</span>
+                        <span>{course.labs.length} Phòng Lab</span>
+                        <span>·</span>
+                        <span>{course.exams.length} Đề mẫu</span>
+                      </div>
+                    )}
                   </div>
 
-                  <h3 className="text-lg font-bold leading-snug">{course.title}</h3>
-                  <p className="text-xs sm:text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                    {course.summary}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 pt-1 text-[11px] font-mono" style={{ color: 'var(--text-muted)' }}>
-                    <span>{course.modules.length} Chặng</span>
-                    <span>·</span>
-                    <span>{totalLessons} Bài học</span>
-                    <span>·</span>
-                    <span>{course.labs.length} Phòng Lab</span>
-                    <span>·</span>
-                    <span>{course.exams.length} Đề thi mẫu</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
-                  {course.modules.length > 0 ? (
-                    <>
+                  <div className="pt-2 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
+                    {course.modules.length > 0 ? (
                       <button
                         type="button"
                         onClick={() => handleLaunchCourse(course.id, 'learn')}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-transform active:scale-95"
-                        style={{ backgroundColor: 'var(--accent-primary)', color: '#FFFFFF' }}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold hover:underline cursor-pointer w-fit bg-transparent border-0 p-0"
+                        style={{ color: 'var(--text-primary)' }}
                       >
-                        <BookOpen className="w-3.5 h-3.5" />
-                        <span>Tham gia học</span>
+                        <span>Tham gia học phần</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </button>
-
-                      <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
-                        Mở đầy đủ Bài giảng, Phòng Lab, Dashboard &amp; Luyện đề
+                    ) : (
+                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                        Đang biên soạn theo khung mẫu <code className="font-mono">TEMPLATE-101</code>
                       </span>
-                    </>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                      <span>
-                        Dùng mẫu <code className="font-mono font-semibold text-[var(--text-primary)]">TEMPLATE-101</code> để kích hoạt môn này ở bản tiếp theo.
-                      </span>
-                    </span>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </IosGlassSurface>
-            );
-          })}
-        </div>
-      </section>
+              );
+            })}
+          </div>
+        </section>
       </div>
 
       {/* =====================================================================

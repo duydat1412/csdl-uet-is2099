@@ -1,4 +1,4 @@
-export const APP_VERSION = 'Beta v1.2';
+export const APP_VERSION = 'Beta v1.3';
 export const APP_CODENAME = 'iOS Liquid Glass · Multi-Course Hub';
 export const APP_RELEASE_DATE = '2026-11-18';
 export const APP_REPOSITORY_URL = 'https://github.com/duydat1412/csdl-uet-is2099';
@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    version: 'Beta v1.3',
+    date: '2026-11-18',
+    tag: 'beta',
+    headline: 'Thiết kế Trang chủ Editorial Tối giản & Điều hướng Chìm Nền',
+    highlights: [
+      'Đồng bộ thanh đầu trang Home theo phong cách phẳng chìm vào nền trang (background-blended): liên kết chữ thuần túy, biểu tượng tìm kiếm/giao diện tối giản và dải thông báo phiên bản tinh gọn.',
+      'Lược bỏ toàn bộ hộp thẻ phụ, huy hiệu màu và nút bấm trùng lặp gây rối mắt trên trang chủ; tập trung giới thiệu mạch lạc triết lý học thuật, khung xem trước công thức LaTeX và danh mục học phần.',
+    ],
+  },
   {
     version: 'Beta v1.2',
     date: '2026-11-18',
