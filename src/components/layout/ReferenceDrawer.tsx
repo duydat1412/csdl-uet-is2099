@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Layers, Sigma, Table2, X } from 'lucide-react';
+import { BookOpen, GitFork, Layers, Sigma, Table2, X } from 'lucide-react';
 import { MathFormula } from '../common/MathFormula';
 import { RichText } from '../common/RichText';
 
@@ -8,7 +8,7 @@ export interface ReferenceDrawerProps {
   onClose: () => void;
 }
 
-type RefTab = 'er' | 'mapping' | 'algebra';
+type RefTab = 'algebra' | 'norm-sql' | 'er' | 'mapping';
 
 export const ReferenceDrawer: React.FC<ReferenceDrawerProps> = ({ open, onClose }) => {
   const [tab, setTab] = useState<RefTab>('algebra');
@@ -26,7 +26,7 @@ export const ReferenceDrawer: React.FC<ReferenceDrawerProps> = ({ open, onClose 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-end"
+      className="fixed inset-0 z-[60] flex justify-end"
       style={{ backgroundColor: 'rgb(15 23 42 / 0.42)' }}
       onClick={onClose}
     >
@@ -36,7 +36,7 @@ export const ReferenceDrawer: React.FC<ReferenceDrawerProps> = ({ open, onClose 
         aria-label="Sổ tay Ký hiệu và Công thức chuẩn UET"
         className="h-full w-full max-w-xl overflow-y-auto flex flex-col"
         style={{
-          backgroundColor: 'var(--bg-surface)',
+          backgroundColor: 'var(--bg-surface-solid)',
           borderLeft: '1px solid var(--border-strong)',
           boxShadow: 'var(--shadow-lg)',
         }}
@@ -45,7 +45,7 @@ export const ReferenceDrawer: React.FC<ReferenceDrawerProps> = ({ open, onClose 
         <div
           className="sticky top-0 z-10 px-5 py-3.5 border-b flex items-center justify-between"
           style={{
-            backgroundColor: 'var(--bg-surface)',
+            backgroundColor: 'var(--bg-surface-solid)',
             borderColor: 'var(--border-subtle)',
           }}
         >
@@ -54,7 +54,7 @@ export const ReferenceDrawer: React.FC<ReferenceDrawerProps> = ({ open, onClose 
             <div>
               <h2 className="text-sm font-bold leading-tight">Sổ tay Ký hiệu & Công thức UET</h2>
               <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                Chuẩn bài giảng Nhập môn Cơ sở dữ liệu (C1 → C3_2)
+                Chuẩn bài giảng Nhập môn Cơ sở dữ liệu (C1 → C4_1 &amp; SQL)
               </p>
             </div>
           </div>
@@ -73,12 +73,13 @@ export const ReferenceDrawer: React.FC<ReferenceDrawerProps> = ({ open, onClose 
         </div>
 
         <div
-          className="px-5 pt-3 pb-0 border-b flex gap-2"
+          className="px-5 pt-3 pb-0 border-b flex flex-wrap gap-1.5"
           style={{ borderColor: 'var(--border-subtle)' }}
         >
           {[
-            { id: 'algebra' as const, label: 'Đại số Quan hệ (C3_2)', Icon: Sigma },
-            { id: 'er' as const, label: 'ER & EER (C2_1, C2_2)', Icon: Layers },
+            { id: 'algebra' as const, label: 'Đại số QH (C3_2)', Icon: Sigma },
+            { id: 'norm-sql' as const, label: 'Chuẩn hóa & SQL (C4_1)', Icon: GitFork },
+            { id: 'er' as const, label: 'ER & EER (C2)', Icon: Layers },
             { id: 'mapping' as const, label: 'Ánh xạ ER → Bảng (C3_1)', Icon: Table2 },
           ].map(({ id, label, Icon }) => {
             const active = tab === id;
@@ -206,9 +207,9 @@ export const ReferenceDrawer: React.FC<ReferenceDrawerProps> = ({ open, onClose 
                 className="rounded-lg p-3.5 border space-y-2"
                 style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border-subtle)' }}
               >
-                <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
-                  7 Quy tắc vàng chuyển ER/EER sang Lược đồ Quan hệ (C3_1 tr. 26–40)
-                </h3>
+                  <div className="text-xs font-semibold">
+                    <RichText content="7 Quy tắc vàng chuyển ER/EER sang Lược đồ Quan hệ (C3_1 tr. 26–40)" />
+                  </div>
                 <RichText
                   content={[
                     '1. **Thực thể mạnh**: Tạo bảng mới, giữ các thuộc tính đơn; tách thuộc tính phức hợp thành các thuộc tính thành phần đơn.',
@@ -218,6 +219,43 @@ export const ReferenceDrawer: React.FC<ReferenceDrawerProps> = ({ open, onClose 
                     '5. **Liên kết $N:M$**: Bắt buộc tách thành **bảng liên kết mới** có khóa chính là cặp khóa ngoại từ hai thực thể.',
                     '6. **Thuộc tính đa trị $A$**: Tách thành bảng mới có khóa chính gồm $(\\text{PK}(E), A)$.',
                     '7. **Liên kết bậc $n \\ge 3$ & Kế thừa EER**: Liên kết $n$-ngôi tách bảng mới; lớp con EER nhận lại khóa chính của lớp cha làm cả `PK` lẫn `FK` (hoặc gộp theo tùy chọn 8A–8D).',
+                  ].join('\n')}
+                />
+              </div>
+            </section>
+          )}
+
+          {tab === 'norm-sql' && (
+            <section className="space-y-3">
+              <div
+                className="rounded-lg p-3.5 border space-y-2.5"
+                style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border-subtle)' }}
+              >
+                <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
+                  Phụ thuộc hàm &amp; Các Dạng chuẩn 1NF → BCNF (C4_1.pdf)
+                </h3>
+                <RichText
+                  content={[
+                    '- **Tiên đề Armstrong**: Phản xạ ($Y \\subseteq X \\implies X \\to Y$), Gia tăng ($X \\to Y \\implies XZ \\to YZ$), Bắc cầu ($X \\to Y, Y \\to Z \\implies X \\to Z$).',
+                    '- **Tìm khóa theo $(L, M, R)$**: Nhóm chỉ ở vế trái/cô lập ($L$) bắt buộc nằm trong mọi khóa; ghép dần các phần tử ở nhóm hai vế ($M$) đến khi $K^+ = R$.',
+                    '- **Tách nhị phân Bảo toàn thông tin**: $(R_1 \\cap R_2)^+ \\supseteq R_1$ hoặc $(R_1 \\cap R_2)^+ \\supseteq R_2$.',
+                    '- **Chuẩn 3NF vs BCNF**: Với mọi $X \\to A$ không tầm thường, **3NF** cho phép $X$ là siêu khóa *hoặc* $A$ là thuộc tính khóa; **BCNF** bắt buộc **$X$ phải là siêu khóa**.',
+                  ].join('\n')}
+                />
+              </div>
+
+              <div
+                className="rounded-lg p-3.5 border space-y-2"
+                style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border-subtle)' }}
+              >
+                <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
+                  Quy đổi Chuẩn sang SQL Cuối kỳ
+                </h3>
+                <RichText
+                  content={[
+                    '- **Phép chiếu $\\pi$**: `SELECT DISTINCT ...` (SQL không tự khử trùng).',
+                    '- **Thứ tự 6 mệnh đề SQL**: `FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY`.',
+                    '- **Phép chia $R \\div S$**: Dùng hai tầng **`WHERE NOT EXISTS (... AND NOT EXISTS (...))`**.',
                   ].join('\n')}
                 />
               </div>

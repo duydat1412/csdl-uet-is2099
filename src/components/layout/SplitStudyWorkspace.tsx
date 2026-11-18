@@ -17,7 +17,7 @@ export const SplitStudyWorkspace: React.FC<SplitStudyWorkspaceProps> = ({
   const [mobileTab, setMobileTab] = useState<'story' | 'workbench'>('story');
 
   return (
-    <div className="w-full h-[calc(100vh-3rem)] flex flex-col lg:flex-row overflow-hidden">
+    <div className="relative z-10 w-full h-[calc(100vh-9.6rem)] lg:h-[calc(100vh-6.9rem)] flex flex-col lg:flex-row overflow-hidden">
       {/* Mobile / Tablet Sticky Tab Bar (< 1024px) */}
       <div
         className="lg:hidden shrink-0 flex border-b px-2 pt-1.5 gap-1"
@@ -67,7 +67,7 @@ export const SplitStudyWorkspace: React.FC<SplitStudyWorkspaceProps> = ({
           mobileTab === 'story' ? 'flex' : 'hidden'
         } lg:flex flex-col w-full lg:w-[45%] xl:w-[44%] h-full overflow-y-auto border-r`}
         style={{
-          backgroundColor: 'var(--bg-canvas)',
+          backgroundColor: 'transparent',
           borderColor: 'var(--border-subtle)',
         }}
       >
@@ -83,7 +83,7 @@ export const SplitStudyWorkspace: React.FC<SplitStudyWorkspaceProps> = ({
           mobileTab === 'workbench' ? 'flex' : 'hidden'
         } lg:flex flex-col w-full lg:w-[55%] xl:w-[56%] h-full overflow-y-auto`}
         style={{
-          backgroundColor: 'var(--bg-subtle)',
+          backgroundColor: 'transparent',
         }}
       >
         <div className="w-full h-full p-3 sm:p-5 flex flex-col">

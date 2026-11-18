@@ -2,7 +2,6 @@ import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { CURRICULUM_MODULES } from './index';
-import { RichText } from '../components/common/RichText';
 import { UET_DATASETS } from '../domain/datasets/uetDatasets';
 import { UET_ER_DIAGRAMS } from '../domain/datasets/uetERDiagrams';
 import { executeRelationalUpdate } from '../domain/anomaly/anomalyEngine';
@@ -11,25 +10,26 @@ import {
   validateCardinalityAnswer,
 } from '../domain/er/erMappingEngine';
 import { evaluateAlgebraProgram } from '../domain/algebra/evaluator';
+import { analyzeNormalForms, computeAttributeClosure } from '../domain/fd/fdEngine';
+import { evaluateSqlQuery } from '../domain/sql/sqlEngine';
+import { RichText } from '../components/common/RichText';
 
 function hasBalancedMathDelimiters(text: string): boolean {
-  // Strip escaped \$ first, then strip $$...$$ blocks, then count remaining $
   const noEscaped = text.replace(/\\\$/g, '');
   const blockMatches = noEscaped.match(/\$\$/g);
   if (blockMatches && blockMatches.length % 2 !== 0) return false;
   const withoutBlocks = noEscaped.replace(/\$\$[\s\S]*?\$\$/g, '');
-  // Ignore inline code spans `...`
   const withoutCode = withoutBlocks.replace(/`[^`]*`/g, '');
   const inlineDollars = withoutCode.match(/\$/g);
   return !inlineDollars || inlineDollars.length % 2 === 0;
 }
 
-describe('Curriculum Integrity Audit (All 5 Modules · 22 Lessons)', () => {
-  it('contains all 5 modules and 22 lessons with unique IDs and valid dataset/diagram links', () => {
-    expect(CURRICULUM_MODULES).toHaveLength(5);
+describe('Curriculum Integrity Audit (All 7 Modules · 31 Lessons — Full Final Exam Scope)', () => {
+  it('contains all 7 modules and 31 lessons with unique IDs and valid dataset/diagram links', () => {
+    expect(CURRICULUM_MODULES).toHaveLength(7);
 
     const allLessons = CURRICULUM_MODULES.flatMap((m) => m.lessons);
-    expect(allLessons).toHaveLength(22);
+    expect(allLessons).toHaveLength(31);
 
     const lessonIds = new Set<string>();
     const stepIds = new Set<string>();
@@ -55,7 +55,7 @@ describe('Curriculum Integrity Audit (All 5 Modules · 22 Lessons)', () => {
     }
   });
 
-  it('maintains balanced LaTeX $ and $$ delimiters across all Vietnamese narratives, callouts, and quizzes', () => {
+  it('maintains balanced LaTeX $ and $$ delimiters and zero raw Markdown markers across all 31 lessons & workedExamples', () => {
     for (const mod of CURRICULUM_MODULES) {
       for (const lesson of mod.lessons) {
         for (const step of lesson.steps) {
@@ -77,6 +77,23 @@ describe('Curriculum Integrity Audit (All 5 Modules · 22 Lessons)', () => {
             expect(
               hasBalancedMathDelimiters(callout.body),
               `Unbalanced $ in ${step.id} callout "${callout.title}"`,
+            ).toBe(true);
+          }
+
+          for (const ex of step.workedExamples ?? []) {
+            expect(
+              hasBalancedMathDelimiters(ex.problemStatement),
+              `Unbalanced $ in workedExample ${ex.id}`,
+            ).toBe(true);
+            for (const st of ex.steps) {
+              expect(
+                hasBalancedMathDelimiters(st.markdownLatex),
+                `Unbalanced $ in workedExample ${ex.id} step "${st.label}"`,
+              ).toBe(true);
+            }
+            expect(
+              hasBalancedMathDelimiters(ex.conclusion),
+              `Unbalanced $ in workedExample ${ex.id} conclusion`,
             ).toBe(true);
           }
 
@@ -104,7 +121,7 @@ describe('Curriculum Integrity Audit (All 5 Modules · 22 Lessons)', () => {
     }
   });
 
-  it('programmatically executes and verifies 100% of interactive challenges across all 22 lessons', () => {
+  it('programmatically executes and verifies 100% of interactive challenges across all 31 lessons (Algebra, FD, SQL, ER, Anomalies)', () => {
     let executedChallenges = 0;
 
     for (const mod of CURRICULUM_MODULES) {
@@ -174,10 +191,42 @@ describe('Curriculum Integrity Audit (All 5 Modules · 22 Lessons)', () => {
               `Algebra solution returned 0 rows in ${step.id}`,
             ).toBeGreaterThan(0);
           }
+
+          if (ch.type === 'fd-norm') {
+            if (ch.mode === 'closure' && ch.seedClosureTarget && ch.expectedClosure) {
+              const cls = computeAttributeClosure(ch.seedClosureTarget, ch.fds).closure;
+              expect([...cls].sort()).toEqual([...ch.expectedClosure].sort());
+            } else {
+              const analysis = analyzeNormalForms(ch.attributes, ch.fds);
+              if (ch.mode === 'candidate-keys' && ch.expectedKeys) {
+                expect(analysis.candidateKeys).toEqual(ch.expectedKeys);
+              }
+              if (ch.mode === 'normal-form' && ch.expectedHighestNormalForm) {
+                expect(analysis.highestNormalForm).toBe(ch.expectedHighestNormalForm);
+              }
+            }
+          }
+
+          if (ch.type === 'sql') {
+            const db = UET_DATASETS[ch.datasetId];
+            expect(db, `Unknown dataset ${ch.datasetId} in ${step.id}`).toBeDefined();
+            const sqlRes = evaluateSqlQuery(db, ch.solutionSql);
+            expect(
+              sqlRes.error,
+              `SQL solution error in ${step.id}: ${sqlRes.error}`,
+            ).toBeUndefined();
+            expect(sqlRes.result).toBeDefined();
+            if (sqlRes.kind === 'select') {
+              expect(
+                sqlRes.result!.rows.length,
+                `SQL solution returned 0 rows in ${step.id}`,
+              ).toBeGreaterThan(0);
+            }
+          }
         }
       }
     }
 
-    expect(executedChallenges).toBeGreaterThanOrEqual(22);
+    expect(executedChallenges).toBeGreaterThanOrEqual(30);
   });
 });

@@ -7,7 +7,9 @@ import { RichText } from '../common/RichText';
 import { AlgebraPlayground } from './AlgebraPlayground';
 import { AnomalyWorkbench } from './AnomalyWorkbench';
 import { ERDiagramCanvas } from './ERDiagramCanvas';
+import { NormalizationWorkbench } from './NormalizationWorkbench';
 import { RelationTableView } from './RelationTableView';
+import { SQLWorkbench } from './SQLWorkbench';
 import { SchemaMapperWorkbench } from './SchemaMapperWorkbench';
 
 export interface WorkbenchHostProps {
@@ -75,6 +77,36 @@ export const WorkbenchHost: React.FC<WorkbenchHostProps> = ({
     );
   }
 
+  if (ch?.type === 'fd-norm') {
+    return (
+      <NormalizationWorkbench
+        title={wb?.title ?? 'Phòng thí nghiệm Phụ thuộc hàm & Chuẩn hóa 1NF–BCNF'}
+        caption={wb?.caption}
+        preset={{
+          relationName: ch.relationName,
+          attributes: ch.attributes,
+          fds: ch.fds,
+        }}
+        challenge={ch}
+        onSolved={onSolved}
+      />
+    );
+  }
+
+  if (ch?.type === 'sql') {
+    return (
+      <SQLWorkbench
+        datasetId={ch.datasetId}
+        title={wb?.title ?? 'Phòng thực hành SQL Cuối kỳ'}
+        caption={wb?.caption}
+        savedSql={savedAnswer}
+        challenge={ch}
+        onSaveSql={onSaveAnswer}
+        onSolved={onSolved}
+      />
+    );
+  }
+
   // 2. Exploratory Workbench panel config (when step has no challenge or has an inline quiz)
   if (wb?.kind === 'anomaly') {
     return (
@@ -135,6 +167,27 @@ export const WorkbenchHost: React.FC<WorkbenchHostProps> = ({
         title={wb.title}
         caption={wb.caption}
         initialExpression={wb.initialExpression}
+      />
+    );
+  }
+
+  if (wb?.kind === 'normalization') {
+    return (
+      <NormalizationWorkbench
+        title={wb.title}
+        caption={wb.caption}
+        preset={wb.fdPreset}
+      />
+    );
+  }
+
+  if (wb?.kind === 'sql') {
+    return (
+      <SQLWorkbench
+        datasetId={wb.datasetId}
+        title={wb.title}
+        caption={wb.caption}
+        initialSql={wb.initialSql}
       />
     );
   }

@@ -328,6 +328,33 @@ export const MODULE_4_RELATIONAL: ModuleSpec = {
               body: 'Nhớ lại Bài 2.4: Trên sơ đồ viết `NHANVIEN (1,1) — Lam_viec — (1,n) PHONGBAN`, con số `(1,n)` nằm cạnh `PHONGBAN` nghĩa là **1 phòng có $n$ nhân viên** $\\implies$ **`PHONGBAN` là phía `1`**, còn **`NHANVIEN` mới là phía `N`**! Vì vậy `MAPHG` phải đi vào bảng `NHANVIEN`.',
             },
           ],
+          workedExamples: [
+            {
+              id: 'ex-4-4-mapping-full',
+              title: 'Trình tự 7 bước chuyển sơ đồ ER Công ty sang Lược đồ Quan hệ (Chuẩn Tự luận)',
+              problemStatement:
+                'Chuyển cụm thực thể `NHANVIEN`, `PHONGBAN`, `DEAN` (liên kết `Phan_cong` $N:M$ kèm `SOGIO`, `Quan_ly` đệ quy `1:N`) và thực thể yếu `THANNHAN` thành các lược đồ quan hệ chuẩn UET.',
+              steps: [
+                {
+                  label: 'Ánh xạ Thực thể mạnh + liên kết 1:N & Đệ quy',
+                  markdownLatex:
+                    '$\\text{NHANVIEN}(\\underline{\\text{MANV}}, \\text{HONV}, \\text{TENNV}, \\text{LUONG}, \\text{MA\\_NQL}, \\text{MAPHG})$ với `MA_NQL` là FK đệ quy tới `NHANVIEN(MANV)` và `MAPHG` là FK nhận từ phía `1` `PHONGBAN`.',
+                },
+                {
+                  label: 'Ánh xạ Thực thể mạnh + liên kết 1:1 & Đa trị',
+                  markdownLatex:
+                    '$\\text{PHONGBAN}(\\underline{\\text{MAPHG}}, \\text{TENPHG}, \\text{TRPHG}, \\text{NG\\_NHANCHUC})$ (nhận `TRPHG` từ `1:1` toàn bộ) và tách đa trị $\\text{DIADIEM\\_PHG}(\\underline{\\text{MAPHG}}, \\underline{\\text{DIADIEM}})$.',
+                },
+                {
+                  label: 'Ánh xạ liên kết N:M & Thực thể yếu',
+                  markdownLatex:
+                    'Tách `Phan_cong` thành $\\text{NV\\_DEAN}(\\underline{\\text{MANV}}, \\underline{\\text{MADA}}, \\text{SOGIO})$ và thực thể yếu $\\text{THANNHAN}(\\underline{\\text{MANV}}, \\underline{\\text{TENTN}}, \\text{QUANHE})$.',
+                },
+              ],
+              conclusion:
+                'Mỗi bảng tách ra đều đạt ngay ít nhất chuẩn `3NF` mà không chứa thuộc tính đa trị hay lặp thông tin!',
+            },
+          ],
           workbench: {
             kind: 'er-diagram',
             diagramId: 'NV_PB_BASIC',

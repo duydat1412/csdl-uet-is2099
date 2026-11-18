@@ -15,6 +15,7 @@ import { MathFormula } from '../common/MathFormula';
 import { RichText } from '../common/RichText';
 import { ConceptCallout } from './ConceptCallout';
 import { InlineQuizCheck } from './InlineQuizCheck';
+import { WorkedExampleCard } from './WorkedExampleCard';
 
 export interface MicroStepStreamProps {
   module: ModuleSpec;
@@ -64,6 +65,23 @@ function extractHintsAndSolution(step: MicroStepSpec): {
     case 'anomaly-sim':
       return {
         hints: [ch.goalDescription],
+      };
+    case 'fd-norm':
+      return {
+        hints: ch.hints,
+        solutionSummary:
+          ch.mode === 'closure' && ch.expectedClosure
+            ? `{${ch.seedClosureTarget?.join(', ') ?? ''}}+ = {${ch.expectedClosure.join(', ')}}`
+            : ch.mode === 'candidate-keys' && ch.expectedKeys
+              ? `Các khóa dự tuyển: ${ch.expectedKeys.map((k) => `{${k.join(', ')}}`).join(' ; ')}`
+              : ch.expectedHighestNormalForm
+                ? `Dạng chuẩn cao nhất: ${ch.expectedHighestNormalForm}`
+                : undefined,
+      };
+    case 'sql':
+      return {
+        hints: ch.hints,
+        solutionSummary: ch.solutionSql,
       };
   }
 }
@@ -245,6 +263,19 @@ export const MicroStepStream: React.FC<MicroStepStreamProps> = ({
                 <div className="mt-4 space-y-3">
                   {step.callouts.map((c, cIdx) => (
                     <ConceptCallout key={`${step.id}-callout-${cIdx}`} callout={c} />
+                  ))}
+                </div>
+              )}
+
+              {/* Deep Worked Exam Examples */}
+              {step.workedExamples && step.workedExamples.length > 0 && (
+                <div className="mt-4 space-y-3">
+                  {step.workedExamples.map((ex, exIdx) => (
+                    <WorkedExampleCard
+                      key={ex.id}
+                      example={ex}
+                      defaultOpen={exIdx === 0}
+                    />
                   ))}
                 </div>
               )}

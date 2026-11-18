@@ -82,7 +82,7 @@ export const RelationTableView: React.FC<RelationTableViewProps> = ({
             borderColor: 'var(--border-subtle)',
           }}
         >
-          <div className="text-xs sm:text-sm overflow-x-auto">
+          <div className="text-xs sm:text-sm overflow-x-auto overflow-y-hidden py-0.5">
             <MathFormula tex={buildSchemaLatex(relation)} />
           </div>
           <div className="flex items-center gap-2 shrink-0">

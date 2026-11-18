@@ -355,6 +355,33 @@ export const MODULE_2_ER: ModuleSpec = {
               body: '**"Đứng ở thực thể nào — đếm số liên kết của 1 cá thể thuộc thực thể đó — rồi ghi $(\\min, \\max)$ ngay dưới chân mình!"** Tuyệt đối không ném số đếm sang đầu bên kia như kiểu $1:N$.',
             },
           ],
+          workedExamples: [
+            {
+              id: 'ex-2-4-minmax',
+              title: 'Dịch xuôi & ngược giữa câu mô tả nghiệp vụ — (min, max) UET — Tỉ số 1 : N',
+              problemStatement:
+                'Hệ thống Quản lý Thư viện: *"Mỗi độc giả (`DOCGIA`) có thể mượn nhiều nhất 5 cuốn sách hoặc không mượn cuốn nào; mỗi cuốn sách (`SACH`) trong kho tại một thời điểm hoặc nằm trên giá, hoặc được tối đa 1 độc giả mượn."* Hãy ghi đúng cả ký hiệu `(min, max)` và tỉ số `1:N`.',
+              steps: [
+                {
+                  label: 'Đứng tại DOCGIA xét (min, max)',
+                  markdownLatex:
+                    '1 độc giả mượn ít nhất $0$ cuốn, nhiều nhất $5$ cuốn $\\implies$ ghi **`(0,5)` ngay sát `DOCGIA`** (hoặc `(0,n)` nếu không giới hạn).',
+                },
+                {
+                  label: 'Đứng tại SACH xét (min, max)',
+                  markdownLatex:
+                    '1 cuốn sách được ít nhất $0$ người mượn, nhiều nhất $1$ người mượn $\\implies$ ghi **`(0,1)` ngay sát `SACH`**.',
+                },
+                {
+                  label: 'Chuyển sang Tỉ số lực lượng cổ điển',
+                  markdownLatex:
+                    '1 Độc giả — nhiều Sách, nên khi ghi theo tỉ số `1 : N`, chữ **`1` nằm cạnh `DOCGIA`** và **`N` nằm cạnh `SACH`**: `DOCGIA (1) — Muon — (N) SACH` (đảo ngược vị trí so với `max` của `(0,n)` vs `(0,1)`!).',
+                },
+              ],
+              conclusion:
+                'Chuẩn UET: `DOCGIA (0,n) — Muon — (0,1) SACH`. Cổ điển: `DOCGIA (1) — Muon — (n) SACH`, cả hai cạnh đều tham gia bộ phận (nét đơn).',
+            },
+          ],
           workbench: {
             kind: 'er-diagram',
             diagramId: 'NV_PB_BASIC',

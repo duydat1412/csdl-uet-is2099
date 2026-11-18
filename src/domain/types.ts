@@ -213,21 +213,80 @@ export interface AlgebraChallenge {
   hints: string[];
 }
 
+export interface WorkedExampleStep {
+  label: string;
+  markdownLatex: string;
+}
+
+export interface WorkedExampleSpec {
+  id: string;
+  title: string;
+  problemStatement: string;
+  steps: WorkedExampleStep[];
+  conclusion: string;
+  examTip?: string;
+}
+
+export interface FunctionalDependencySpec {
+  left: string[];
+  right: string[];
+}
+
+export interface FDChallenge {
+  type: 'fd-norm';
+  prompt: string;
+  relationName: string;
+  attributes: string[];
+  fds: FunctionalDependencySpec[];
+  mode: 'closure' | 'candidate-keys' | 'normal-form';
+  seedClosureTarget?: string[];
+  expectedClosure?: string[];
+  expectedKeys?: string[][];
+  expectedHighestNormalForm?: '1NF' | '2NF' | '3NF' | 'BCNF';
+  hints: string[];
+}
+
+export interface SQLChallenge {
+  type: 'sql';
+  datasetId: string;
+  prompt: string;
+  starterSql?: string;
+  solutionSql: string;
+  checkOrder?: boolean;
+  hints: string[];
+}
+
 export type WorkbenchChallenge =
   | QuizChallenge
   | AnomalySimChallenge
   | CardinalityToggleChallenge
   | EERConstraintChallenge
   | SchemaMapperChallenge
-  | AlgebraChallenge;
+  | AlgebraChallenge
+  | FDChallenge
+  | SQLChallenge;
 
 export interface WorkbenchPanelConfig {
-  kind: 'anomaly' | 'three-schema' | 'er-diagram' | 'schema-mapper' | 'algebra' | 'dataset-preview';
+  kind:
+    | 'anomaly'
+    | 'three-schema'
+    | 'er-diagram'
+    | 'schema-mapper'
+    | 'algebra'
+    | 'normalization'
+    | 'sql'
+    | 'dataset-preview';
   datasetId?: string;
   diagramId?: string;
   title: string;
   caption?: string;
   initialExpression?: string;
+  initialSql?: string;
+  fdPreset?: {
+    relationName: string;
+    attributes: string[];
+    fds: FunctionalDependencySpec[];
+  };
 }
 
 export interface MicroStepSpec {
@@ -236,6 +295,7 @@ export interface MicroStepSpec {
   title: string;
   narrative: string;
   callouts?: CalloutSpec[];
+  workedExamples?: WorkedExampleSpec[];
   workbench?: WorkbenchPanelConfig;
   challenge?: WorkbenchChallenge;
 }

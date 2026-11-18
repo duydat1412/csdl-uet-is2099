@@ -410,6 +410,32 @@ export const MODULE_5_ALGEBRA: ModuleSpec = {
               body: 'Giả sử cần tìm `MANV` tham gia tất cả đề án `MADA` của phòng 5 từ bảng `NV_DEAN(MANV, MADA, SOGIO)`. Nếu bạn lấy nguyên bảng `NV_DEAN ÷ DA_P5` mà **quên chiếu bỏ cột `SOGIO`**, thì $Y = Z - X = \\{\\text{MANV, SOGIO}\\}$! Khi đó 1 nhân viên làm đề án 1 (10 giờ) và đề án 2 (20 giờ) sẽ bị coi là khác bộ `SOGIO` và trả về **rỗng $\\emptyset$**! **Luôn phải $\\pi_{\\text{MANV, MADA}}(\\text{NV\\_DEAN})$ trước khi chia!**',
             },
           ],
+          workedExamples: [
+            {
+              id: 'ex-5-5-division-proof',
+              title: 'Giải mẫu Phép Chia 4 bước + Khử cột thừa (C3_2.pdf tr. 85–88)',
+              problemStatement:
+                'Cho $R(\\text{NV\\_DEAN}) = \\{\\text{MANV, MADA, SOGIO}\\}$ và `DEAN(MADA, PHONG)`. Tìm `MANV` tham gia **tất cả** đề án do phòng 5 chủ trì, sau đó viết biểu thức tương đương chỉ dùng $\\{\\pi, \\times, -\\}$.',
+              steps: [
+                {
+                  label: 'Bước A — Chuẩn bị số bị chia sạch (bỏ cột SOGIO) & số chia',
+                  markdownLatex:
+                    '$$\\text{DA\\_P5} \\leftarrow \\pi_{\\text{MADA}}(\\sigma_{\\text{PHONG}=5}(\\text{DEAN}))$$\n$$\\text{NV\\_DA} \\leftarrow \\pi_{\\text{MANV, MADA}}(\\text{NV\\_DEAN})$$',
+                },
+                {
+                  label: 'Bước B — Dùng phép chia rút gọn',
+                  markdownLatex: '$$\\text{KQ} \\leftarrow \\text{NV\\_DA} \\div \\text{DA\\_P5}$$',
+                },
+                {
+                  label: 'Bước C — Khai triển tương đương qua 5 phép toán cơ bản',
+                  markdownLatex:
+                    '$$T_1 \\leftarrow \\pi_{\\text{MANV}}(\\text{NV\\_DA})$$\n$$T_2 \\leftarrow \\pi_{\\text{MANV}}((\\text{DA\\_P5} \\times T_1) - \\text{NV\\_DA})$$\n$$\\text{KQ} \\leftarrow T_1 - T_2$$',
+                },
+              ],
+              conclusion:
+                'Việc tách `NV_DA ← π_{MANV, MADA}(NV_DEAN)` trước khi chia là bắt buộc để `T1` chỉ chứa duy nhất cột `MANV`!',
+            },
+          ],
           workbench: {
             kind: 'algebra',
             datasetId: 'DIV_TOY',

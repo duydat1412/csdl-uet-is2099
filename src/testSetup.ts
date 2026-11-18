@@ -32,3 +32,16 @@ if (
     writable: true,
   });
 }
+
+// JSDOM omits ElementCSSInlineStyle (.style) on MathML (<math>, <mi>, ...) emitted by KaTeX,
+// causing dom-accessibility-api's getComputedStyle() calls during getByRole() queries to throw.
+if (typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
+  const originalGetComputedStyle = window.getComputedStyle.bind(window);
+  const fallbackStyleTarget = document.createElement('span');
+  window.getComputedStyle = (elt: Element, pseudoElt?: string | null) => {
+    if (elt && (elt as Partial<HTMLElement>).style == null) {
+      return originalGetComputedStyle(fallbackStyleTarget, pseudoElt);
+    }
+    return originalGetComputedStyle(elt, pseudoElt);
+  };
+}

@@ -24,6 +24,8 @@ export interface TopStudyBarProps {
   nextLesson: LessonSpec | null;
   onOpenReference: () => void;
   onJumpToStep: (stepIndex: number) => void;
+  embedded?: boolean;
+  courseLabel?: string;
 }
 
 export const TopStudyBar: React.FC<TopStudyBarProps> = ({
@@ -34,6 +36,8 @@ export const TopStudyBar: React.FC<TopStudyBarProps> = ({
   nextLesson,
   onOpenReference,
   onJumpToStep,
+  embedded = false,
+  courseLabel = 'UET · IS2099',
 }) => {
   const {
     state,
@@ -85,25 +89,31 @@ export const TopStudyBar: React.FC<TopStudyBarProps> = ({
   ];
 
   return (
-    <header
-      className="sticky top-0 z-40 h-12 w-full select-none border-b px-3 sm:px-4 flex items-center justify-between gap-2"
-      style={{
-        backgroundColor: 'var(--bg-surface)',
-        borderColor: 'var(--border-subtle)',
-      }}
+    <div
+      className={`${embedded ? 'relative z-30 ios-frosted-panel' : 'sticky top-0 z-40'} h-12 w-full select-none border-b px-3 sm:px-4 flex items-center justify-between gap-2`}
+      style={
+        embedded
+          ? { borderColor: 'var(--border-subtle)' }
+          : {
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+            }
+      }
     >
       {/* Left: Course tag + Lesson Switcher */}
       <div className="relative flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1" ref={popoverRef}>
-        <span
-          className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold tracking-wide uppercase shrink-0"
-          style={{
-            backgroundColor: 'var(--accent-soft)',
-            color: 'var(--accent-primary)',
-            border: '1px solid var(--accent-border)',
-          }}
-        >
-          UET · IS2099
-        </span>
+        {!embedded && (
+          <span
+            className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold tracking-wide uppercase shrink-0"
+            style={{
+              backgroundColor: 'var(--accent-soft)',
+              color: 'var(--accent-primary)',
+              border: '1px solid var(--accent-border)',
+            }}
+          >
+            {courseLabel}
+          </span>
+        )}
 
         <button
           type="button"
@@ -144,7 +154,7 @@ export const TopStudyBar: React.FC<TopStudyBarProps> = ({
             >
               <div>
                 <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                  Lộ trình C1 → C3_2 (ĐH Công nghệ — ĐHQGHN)
+                  Lộ trình {courseLabel} · {modules.length} Chặng · {totalLessons} Bài
                 </div>
                 <div className="text-sm font-semibold mt-0.5">
                   Đã hoàn thành {completedCount}/{totalLessons} bài học
@@ -350,38 +360,40 @@ export const TopStudyBar: React.FC<TopStudyBarProps> = ({
           <span className="hidden sm:inline">Sổ tay Ký hiệu</span>
         </button>
 
-        <div
-          role="group"
-          aria-label="Chế độ giao diện Sáng Tối"
-          className="inline-flex items-center rounded-md p-0.5"
-          style={{
-            backgroundColor: 'var(--bg-subtle)',
-            border: '1px solid var(--border-subtle)',
-          }}
-        >
-          {themeOptions.map(({ mode, label, Icon }) => {
-            const active = state.theme === mode;
-            return (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => setTheme(mode)}
-                title={label}
-                aria-label={label}
-                aria-pressed={active}
-                className="p-1 rounded transition-colors cursor-pointer"
-                style={{
-                  backgroundColor: active ? 'var(--bg-surface)' : 'transparent',
-                  color: active ? 'var(--accent-primary)' : 'var(--text-muted)',
-                  boxShadow: active ? 'var(--shadow-sm)' : 'none',
-                }}
-              >
-                <Icon className="w-3.5 h-3.5" />
-              </button>
-            );
-          })}
-        </div>
+        {!embedded && (
+          <div
+            role="group"
+            aria-label="Chế độ giao diện Sáng Tối"
+            className="inline-flex items-center rounded-md p-0.5"
+            style={{
+              backgroundColor: 'var(--bg-subtle)',
+              border: '1px solid var(--border-subtle)',
+            }}
+          >
+            {themeOptions.map(({ mode, label, Icon }) => {
+              const active = state.theme === mode;
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setTheme(mode)}
+                  title={label}
+                  aria-label={label}
+                  aria-pressed={active}
+                  className="p-1 rounded transition-colors cursor-pointer"
+                  style={{
+                    backgroundColor: active ? 'var(--bg-surface)' : 'transparent',
+                    color: active ? 'var(--accent-primary)' : 'var(--text-muted)',
+                    boxShadow: active ? 'var(--shadow-sm)' : 'none',
+                  }}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </header>
+    </div>
   );
 };

@@ -191,6 +191,8 @@ function renderInlineSegments(segments: InlineSegment[], keyPrefix: string): Rea
 
 type BlockNode =
   | { kind: 'displayMath'; tex: string }
+  | { kind: 'codeBlock'; lang: string; code: string }
+  | { kind: 'blockquote'; text: string }
   | { kind: 'heading'; level: 3 | 4; text: string }
   | { kind: 'ul'; items: string[] }
   | { kind: 'ol'; items: string[] }
@@ -239,6 +241,21 @@ function parseBlocks(raw: string): BlockNode[] {
         continue;
       }
 
+      if (line.startsWith('```')) {
+        const lang = line.slice(3).trim();
+        idx += 1;
+        const codeLines: string[] = [];
+        while (idx < lines.length && !lines[idx].trim().startsWith('```')) {
+          codeLines.push(lines[idx]);
+          idx += 1;
+        }
+        if (idx < lines.length && lines[idx].trim().startsWith('```')) {
+          idx += 1;
+        }
+        blocks.push({ kind: 'codeBlock', lang, code: codeLines.join('\n') });
+        continue;
+      }
+
       if (line.startsWith('#### ')) {
         blocks.push({ kind: 'heading', level: 4, text: line.slice(5).trim() });
         idx += 1;
@@ -248,6 +265,16 @@ function parseBlocks(raw: string): BlockNode[] {
       if (line.startsWith('### ')) {
         blocks.push({ kind: 'heading', level: 3, text: line.slice(4).trim() });
         idx += 1;
+        continue;
+      }
+
+      if (line.startsWith('> ') || line === '>') {
+        const quoteLines: string[] = [];
+        while (idx < lines.length && (lines[idx].trim().startsWith('> ') || lines[idx].trim() === '>')) {
+          quoteLines.push(lines[idx].trim().replace(/^>\s?/, ''));
+          idx += 1;
+        }
+        blocks.push({ kind: 'blockquote', text: quoteLines.join(' ').trim() });
         continue;
       }
 
@@ -298,7 +325,10 @@ function parseBlocks(raw: string): BlockNode[] {
         !lines[idx].trim().startsWith('#### ') &&
         !/^[-•]\s+/.test(lines[idx].trim()) &&
         !/^\d+\.\s+/.test(lines[idx].trim()) &&
-        !lines[idx].trim().startsWith('|')
+        !lines[idx].trim().startsWith('|') &&
+        !lines[idx].trim().startsWith('```') &&
+        !lines[idx].trim().startsWith('> ') &&
+        lines[idx].trim() !== '>'
       ) {
         paraLines.push(lines[idx].trim());
         idx += 1;
@@ -320,6 +350,34 @@ export const RichText: React.FC<RichTextProps> = ({ content, className = '' }) =
         switch (block.kind) {
           case 'displayMath':
             return <MathFormula key={key} tex={block.tex} displayMode />;
+          case 'codeBlock':
+            return (
+              <pre
+                key={key}
+                className="overflow-x-auto rounded-xl border p-3 font-mono text-xs sm:text-[13px] leading-relaxed"
+                style={{
+                  backgroundColor: 'var(--bg-subtle)',
+                  borderColor: 'var(--border-subtle)',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                <code>{block.code}</code>
+              </pre>
+            );
+          case 'blockquote':
+            return (
+              <blockquote
+                key={key}
+                className="rounded-xl border-l-4 px-4 py-2.5 text-sm leading-relaxed"
+                style={{
+                  borderColor: 'var(--accent-primary)',
+                  backgroundColor: 'var(--accent-soft)',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                {renderInlineSegments(tokenizeInline(block.text), key)}
+              </blockquote>
+            );
           case 'heading':
             return block.level === 3 ? (
               <h3 key={key} className="pt-1 text-base font-semibold text-[var(--text-primary)]">

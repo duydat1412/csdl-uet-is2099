@@ -82,6 +82,15 @@ function loadState(defaultLessonId: string): ProgressState {
   }
 }
 
+export function isThemeDark(theme: ThemeMode): boolean {
+  if (theme === 'dark') return true;
+  if (theme === 'light') return false;
+  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  return false;
+}
+
 function applyThemeToDocument(theme: ThemeMode): void {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
@@ -90,6 +99,7 @@ function applyThemeToDocument(theme: ThemeMode): void {
   } else {
     root.setAttribute('data-theme', theme);
   }
+  root.classList.toggle('dark', isThemeDark(theme));
 }
 
 export interface ProgressContextValue {
@@ -118,11 +128,13 @@ const ProgressContext = createContext<ProgressContextValue | null>(null);
 
 export interface ProgressProviderProps {
   defaultLessonId: string;
+  onStepCompleted?: () => void;
   children: React.ReactNode;
 }
 
 export const ProgressProvider: React.FC<ProgressProviderProps> = ({
   defaultLessonId,
+  onStepCompleted,
   children,
 }) => {
   const [state, setState] = useState<ProgressState>(() => loadState(defaultLessonId));
@@ -210,8 +222,9 @@ export const ProgressProvider: React.FC<ProgressProviderProps> = ({
             : prev.completedLessonIds,
         };
       });
+      onStepCompleted?.();
     },
-    [],
+    [onStepCompleted],
   );
 
   const isStepCompleted = useCallback(
