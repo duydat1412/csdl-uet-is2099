@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import {
   ArrowRight,
@@ -73,6 +73,26 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [showcaseMode, setShowcaseMode] =
     useState<(typeof SHOWCASE_MODES)[number]['id']>('algebra');
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
+  const themeMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!themeMenuOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (themeMenuRef.current && !themeMenuRef.current.contains(e.target as Node)) {
+        setThemeMenuOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setThemeMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [themeMenuOpen]);
 
   const activeShowcase =
     SHOWCASE_MODES.find((m) => m.id === showcaseMode) ?? SHOWCASE_MODES[0];
@@ -681,61 +701,77 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
 
             <div className="md:col-span-3">
-              <label
-                htmlFor="footer-theme-select"
-                className="block text-xs font-medium mb-2.5"
+              <div
+                className="text-xs font-medium mb-2.5"
                 style={{ color: 'var(--text-muted)' }}
               >
                 Giao diện
-              </label>
-              <div className="relative w-full md:max-w-[240px]">
-                <select
+              </div>
+              <div className="relative w-full md:max-w-[240px]" ref={themeMenuRef}>
+                <button
                   id="footer-theme-select"
+                  type="button"
                   aria-label="Chọn giao diện"
-                  value={progressState.theme}
-                  onChange={(e) => setTheme(e.target.value as ThemeMode)}
-                  className="w-full appearance-none rounded-full border px-4 py-2 pr-9 text-xs font-medium cursor-pointer transition-colors"
+                  aria-expanded={themeMenuOpen}
+                  onClick={() => setThemeMenuOpen((o) => !o)}
+                  className="w-full rounded-full border px-4 py-2 text-xs font-medium flex items-center justify-between gap-2 cursor-pointer transition-colors"
                   style={{
                     borderColor: 'var(--border-strong)',
                     backgroundColor: 'transparent',
                     color: 'var(--text-primary)',
-                    appearance: 'none',
-                    WebkitAppearance: 'none',
-                    MozAppearance: 'none',
                   }}
                 >
-                  <option
-                    value="light"
+                  <span>
+                    {progressState.theme === 'light'
+                      ? 'Sáng (Pearl Glass)'
+                      : progressState.theme === 'dark'
+                        ? 'Tối (Midnight Obsidian)'
+                        : 'Theo hệ thống'}
+                  </span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 shrink-0 transition-transform ${themeMenuOpen ? 'rotate-180' : ''}`}
+                    style={{ color: 'var(--text-muted)' }}
+                  />
+                </button>
+
+                {themeMenuOpen && (
+                  <div
+                    role="listbox"
+                    aria-label="Danh sách chế độ giao diện"
+                    className="absolute left-0 right-0 bottom-full mb-1.5 rounded-2xl border p-1.5 space-y-0.5 z-30 shadow-lg"
                     style={{
-                      backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
-                      color: isDark ? '#F8FAFC' : '#0F172A',
+                      backgroundColor: 'var(--bg-surface-solid)',
+                      borderColor: 'var(--border-subtle)',
                     }}
                   >
-                    Sáng (Pearl Glass)
-                  </option>
-                  <option
-                    value="dark"
-                    style={{
-                      backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
-                      color: isDark ? '#F8FAFC' : '#0F172A',
-                    }}
-                  >
-                    Tối (Midnight Obsidian)
-                  </option>
-                  <option
-                    value="system"
-                    style={{
-                      backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
-                      color: isDark ? '#F8FAFC' : '#0F172A',
-                    }}
-                  >
-                    Theo hệ thống
-                  </option>
-                </select>
-                <ChevronDown
-                  className="w-3.5 h-3.5 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2"
-                  style={{ color: 'var(--text-muted)' }}
-                />
+                    {[
+                      { mode: 'light' as const, label: 'Sáng (Pearl Glass)' },
+                      { mode: 'dark' as const, label: 'Tối (Midnight Obsidian)' },
+                      { mode: 'system' as const, label: 'Theo hệ thống' },
+                    ].map((opt) => {
+                      const selected = progressState.theme === opt.mode;
+                      return (
+                        <button
+                          key={opt.mode}
+                          type="button"
+                          role="option"
+                          aria-selected={selected}
+                          onClick={() => {
+                            setTheme(opt.mode);
+                            setThemeMenuOpen(false);
+                          }}
+                          className="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium cursor-pointer transition-colors"
+                          style={{
+                            backgroundColor: selected ? 'var(--accent-soft)' : 'transparent',
+                            color: selected ? 'var(--accent-primary)' : 'var(--text-primary)',
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           </div>
